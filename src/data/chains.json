@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Juno",
+    "chain_id": "juno-1",
+    "lcd": "https://lcd-juno.itastakers.com",
+    "rpc": "https://rpc-juno.itastakers.com",
+    "coinDenom": "JUNO",
+    "coinMinimalDenom": "ujuno",
+    "prefix": "juno",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "mainnet"
+  },
+  {
+    "name": "Juno Hera",
+    "chain_id": "hera",
+    "lcd": "https://lcd-juno-hera.itastakers.com",
+    "rpc": "https://rpc-juno-hera.itastakers.com",
+    "coinDenom": "JUNO",
+    "coinMinimalDenom": "ujuno",
+    "prefix": "juno",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "testnet"
+  },
+  {
+    "name": "BitSong Testnet",
+    "chain_id": "bitsong-testnet-6",
+    "lcd": "https://api.testnet.bitsong.network",
+    "rpc": "https://rpc.testnet.bitsong.network", 
+    "coinDenom": "BTSG",
+    "coinMinimalDenom": "ubtsg",
+    "prefix": "bitsong",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "testnet"
+  },
+  {
+    "name": "Sentinel",
+    "chain_id": "sentinelhub-2",
+    "lcd": "https://lcd-sentinel.itastakers.com",
+    "rpc": "https://rpc-sentinel.itastakers.com",
+    "coinDenom": "dVPN",
+    "coinMinimalDenom": "udvpn",
+    "prefix": "sent",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "mainnet"
+  },
+  {
+    "name": "Osmosis",
+    "chain_id": "osmosis-1",
+    "lcd": "https://lcd-osmosis.keplr.app",
+    "rpc": "https://rpc-osmosis.keplr.app",
+    "coinDenom": "OSMO",
+    "coinMinimalDenom": "uosmo",
+    "prefix": "osmo",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "mainnet"
+  }
+]

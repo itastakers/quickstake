@@ -1,0 +1,47 @@
+{
+  "name": "quick-stake",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QuickStake",
+  "author": "dimi",
+  "keywords": [
+    "gatsby"
+  ],
+  "scripts": {
+    "develop": "gatsby develop --host=0.0.0.0",
+    "start": "gatsby develop --host=0.0.0.0",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean"
+  },
+  "dependencies": {
+    "@cosmjs/stargate": "^0.26.0",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@ledgerhq/hw-app-cosmos": "^6.7.0",
+    "@ledgerhq/hw-transport-web-ble": "^6.7.0",
+    "@mui/icons-material": "^5.0.1",
+    "@mui/material": "^5.0.1",
+    "@mui/styles": "^5.0.1",
+    "@mui/x-data-grid": "^5.0.0-beta.2",
+    "axios": "^0.21.4",
+    "gatsby": "^3.13.1",
+    "gatsby-plugin-google-analytics": "^3.14.0",
+    "gatsby-plugin-image": "^1.14.0",
+    "gatsby-plugin-manifest": "^3.14.0",
+    "gatsby-plugin-react-helmet": "^4.14.0",
+    "gatsby-plugin-sharp": "^3.14.0",
+    "gatsby-plugin-sitemap": "^4.10.0",
+    "gatsby-source-filesystem": "^3.14.0",
+    "gatsby-transformer-sharp": "^3.14.0",
+    "path-browserify": "^1.0.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
+    "stream-browserify": "^3.0.0"
+  },
+  "browserslist": [
+    ">0.25%",
+    "not dead"
+  ]
+}

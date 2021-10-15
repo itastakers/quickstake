@@ -1,0 +1,10 @@
+[{
+  "id": "mainnet",
+  "name": "Mainnet"
+},{
+  "id": "testnet",
+  "name": "Testnet"
+},{
+  "id": "local",
+  "name": "Local"
+}]
