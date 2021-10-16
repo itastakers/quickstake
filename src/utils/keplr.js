@@ -71,7 +71,7 @@ export const connectKeplr = async (chain, dispatch) => {
 
   // suggest chain and approve network
   await suggestChain(chain);
-  await window.keplr.enable("hera");
+  await window.keplr.enable(chain.chain_id);
 
   // Setup signer
   const offlineSigner = window.getOfflineSignerOnlyAmino(chain.chain_id);
