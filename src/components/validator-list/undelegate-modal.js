@@ -1,10 +1,10 @@
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { GlobalContext } from "../../context/store";
-import { delegate, getDelegation, renderBalance, undelegate } from "../../utils/cosmos";
+import { getDelegation, undelegate, getUnbondingDelegation } from "../../utils/cosmos";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -24,12 +24,33 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
 
   const [undelegation, setUndelegation] = useState(0);
   const [currentDelegation, setCurrentDelegation] = useState(null);
+  const [unbondingDelegations, setUnbondingDelegations] = useState([]);
+  const [totalUnbonding, setTotalUnbonding] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  if (validator.address) {
-    getDelegation(state.signingClient, state.address, validator.address)
-      .then(result => setCurrentDelegation(result.amount / 1000000)).catch(() => setCurrentDelegation(0))
-  }
+  useEffect(() => {
+    if (validator.address) {
+      getUnbondingDelegation(validator.address, state.address, state.chain.rpc)
+        .then(result => {
+          setUnbondingDelegations(result.unbond.entries)
+          let total = 0;
+          unbondingDelegations.map(unDel => {
+            total += parseInt(unDel.balance);
+          })
+          setTotalUnbonding(total / 1000000)
+        })
+        .catch(() => {
+          setTotalUnbonding(0)
+        })
+
+      getDelegation(state.signingClient, state.address, validator.address)
+        .then(result => setCurrentDelegation(result.amount / 1000000))
+        .catch(() => setCurrentDelegation(0))
+
+
+    }
+  }, [open])
+
   const handleUndelegate = async () => {
     let undelegationAmount = parseFloat(undelegation) * 1000000;
 
@@ -99,6 +120,13 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
           sx={{ mb: 2 }}
         >
           <b>Currently delegated:</b> {currentDelegation ?? 0} {state.chain.coinDenom}
+        </Typography>
+        <Typography
+          id="modal-modal-description"
+          variant="subtitle1"
+          sx={{ mb: 2 }}
+        >
+          <b>Currently unbonding:</b> {totalUnbonding ?? 0} {state.chain.coinDenom}
         </Typography>
         <TextField
           id="outlined-required"
