@@ -40,12 +40,8 @@ const actionConnect = async (type, selectedNetwork, dispatch) => {
     case "keplr":
       await connectKeplr(chain, dispatch);
       break;
+    default:
   }
-
-  // const transport = await Transport.create();
-  // const cosmos = CosmosApp(transport);
-
-  // console.log(cosmos);
 };
 
 const ConnectWallet = () => {

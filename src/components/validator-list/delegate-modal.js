@@ -1,13 +1,12 @@
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { GlobalContext } from "../../context/store";
-import { delegate, getDelegation, renderBalance } from "../../utils/cosmos";
+import { delegate, renderBalance } from "../../utils/cosmos";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
-import Stack from "@mui/material/Stack";
 
 const style = {
   position: "absolute",
@@ -24,7 +23,7 @@ const DelegateModal = ({ open, validator, handleClose }) => {
   const [state, dispatch] = useContext(GlobalContext);
 
   const [delegation, setDelegation] = useState(0);
-  const [currentDelegation, setCurrentDelegation] = useState(0);
+  const [currentDelegation] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const handleDelegate = async () => {

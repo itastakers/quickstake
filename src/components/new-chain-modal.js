@@ -30,7 +30,8 @@ const NewChainModal = ({ open, handleClose }) => {
         group: 'local'
     });
 
-    const [placeholders, setPlaceholders] = useState(chains[0]);
+    const [placeholders] = useState(chains[0]);
+
     const handleChange = name => event => {
         setValues({ ...values, [name]: event.target.value })
     }

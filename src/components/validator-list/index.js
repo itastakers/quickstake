@@ -25,10 +25,6 @@ const ValidatorList = () => {
     setModalOpen(true);
   };
 
-  const openChainModal = () => {
-    setChainModalOpen(true);
-  }
-
   useEffect(() => {
     const mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
     const chain = mergedChains.find(
