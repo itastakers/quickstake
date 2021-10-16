@@ -1,13 +1,12 @@
 import Modal from "@mui/material/Modal";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { GlobalContext } from "../../context/store";
-import { delegate, getDelegation, renderBalance } from "../../utils/cosmos";
+import { delegate, getDelegation, renderBalance, undelegate } from "../../utils/cosmos";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
-import Stack from "@mui/material/Stack";
 
 const style = {
   position: "absolute",
@@ -23,24 +22,26 @@ const style = {
 const UndelegateModal = ({ open, validator, handleClose }) => {
   const [state, dispatch] = useContext(GlobalContext);
 
-  const [delegation, setDelegation] = useState(0);
-  const [currentDelegation, setCurrentDelegation] = useState(0);
+  const [undelegation, setUndelegation] = useState(0);
+  const [currentDelegation, setCurrentDelegation] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  console.log(state.signingClient)
+  if (validator.address) {
+    getDelegation(state.signingClient, state.address, validator.address)
+      .then(result => setCurrentDelegation(result.amount / 1000000)).catch(() => setCurrentDelegation(0))
+  }
+  const handleUndelegate = async () => {
+    let undelegationAmount = parseFloat(undelegation) * 1000000;
 
-  
-  const handleDelegate = async () => {
-    let delegationAmount = parseInt(delegation) * 1000000;
     setLoading(true);
 
     try {
-      const res = await delegate(
+      const res = await undelegate(
         state.chain,
         state.signingClient,
         state.address,
         validator.address,
-        delegationAmount
+        undelegationAmount
       );
 
       if (!res || res.code !== 0) {
@@ -76,23 +77,6 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
     handleClose();
   };
 
-  // useEffect(() => {
-  //   async function fetchDel() {
-  //     const res = await getDelegation(
-  //       state.signingClient,
-  //       state.address,
-  //       validator.address
-  //     );
-  //     console.log(res, "pippo");
-
-  //     if (res !== undefined) {
-  //       setCurrentDelegation(res.amount);
-  //     }
-  //   }
-
-  //   fetchDel();
-  // }, [validator]);
-
   return (
     <Modal
       open={open}
@@ -114,31 +98,25 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
           variant="subtitle1"
           sx={{ mb: 2 }}
         >
-          <b>Currently delegated:</b> {renderBalance(state.chain, state.balance)}
-          {currentDelegation > 0 && (
-            <>
-              <br />
-              <b>Current Delegation:</b>{" "}
-              {renderBalance(state.chain, currentDelegation)}{" "}
-            </>
-          )}
+          <b>Currently delegated:</b> {currentDelegation ?? 0} {state.chain.coinDenom}
         </Typography>
         <TextField
           id="outlined-required"
-          label="Delegation Amount"
+          label="Undelegation Amount"
           fullWidth
-          value={delegation}
-          onChange={(e) => setDelegation(e.target.value)}
+          value={undelegation}
+          onChange={(e) => setUndelegation(e.target.value)}
           sx={{ mb: 2 }}
         />
         <Button
           variant="contained"
           disabled={loading}
+          color="error"
           onClick={() => {
-            handleDelegate();
+            handleUndelegate();
           }}
         >
-          Delegate
+          Undelegate
         </Button>
         {loading && <LinearProgress sx={{ mt: 2 }} />}
       </Box>

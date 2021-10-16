@@ -28,7 +28,7 @@ const DelegateModal = ({ open, validator, handleClose }) => {
   const [loading, setLoading] = useState(false);
 
   const handleDelegate = async () => {
-    let delegationAmount = parseInt(delegation) * 1000000;
+    let delegationAmount = parseFloat(delegation) * 1000000;
     setLoading(true);
 
     try {
