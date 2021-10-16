@@ -17,3 +17,12 @@ export const delegate = async (chain, client, delegator, validator, amount) => {
     { gas: "250000", amount: [{ denom: chain.coinMinimalDenom, amount: "0" }] }
   );
 };
+
+export const undelegate = async (chain, client, delegator, validator, amount) => {
+  return await client?.undelegateTokens(
+    delegator,
+    validator,
+    coin(amount, chain.coinMinimalDenom),
+    { gas: "250000", amount: [{ denom: chain.coinMinimalDenom, amount: "0"}]}
+  )
+}

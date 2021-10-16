@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import PublicIcon from "@mui/icons-material/Public";
 import DelegateModal from "./delegate-modal";
+import UndelegateModal from "./undelegate-modal";
 import { Alert } from "@mui/material";
 
 const ValidatorList = () => {
@@ -16,12 +17,17 @@ const ValidatorList = () => {
   const [rows, setRows] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalUndelegateOpen, setModalUndelegateOpen] = useState(false);
   const [validator, setValidator] = useState({});
 
   const openModal = (validator) => {
     setValidator(validator);
-
     setModalOpen(true);
+  };
+
+  const openUndelgateModal = (validator) => {
+    setValidator(validator);
+    setModalUndelegateOpen(true);
   };
 
   useEffect(() => {
@@ -81,7 +87,7 @@ const ValidatorList = () => {
     {
       field: "commission",
       headerName: "Commission",
-      width: 150,
+      width: 120,
       renderCell: (params) => (
         <>{(parseFloat(params.value) * 100).toFixed(2)} % </>
       ),
@@ -89,7 +95,7 @@ const ValidatorList = () => {
     {
       field: "link",
       headerName: "Links",
-      width: 100,
+      width: 90,
       renderCell: (params) => {
         if (params.value === undefined || params.value === "") {
           return <></>;
@@ -112,17 +118,28 @@ const ValidatorList = () => {
       field: "action",
       type: "actions",
       headerName: "Action",
-      width: 150,
+      width: 280,
       renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{ marginLeft: 16 }}
-          onClick={() => openModal(params.value)}
-        >
-          Delegate
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            style={{ marginLeft: 16 }}
+            onClick={() => openModal(params.value)}
+          >
+            Delegate
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            style={{ marginLeft: 16 }}
+            onClick={() => openUndelgateModal(params.value)}
+          >
+            Undelegate
+          </Button>
+        </>
       ),
     },
   ];
@@ -140,6 +157,13 @@ const ValidatorList = () => {
         validator={validator}
         handleClose={() => {
           setModalOpen(false);
+        }}
+      />
+      <UndelegateModal
+        open={modalUndelegateOpen}
+        validator={validator}
+        handleClose={() => {
+          setModalUndelegateOpen(false);
         }}
       />
       <DataGrid
