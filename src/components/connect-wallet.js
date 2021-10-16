@@ -33,7 +33,8 @@ const style = {
 };
 
 const actionConnect = async (type, selectedNetwork, dispatch) => {
-  const chain = chains.find((c) => c.chain_id === selectedNetwork);
+  const mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
+  const chain = mergedChains.find((c) => c.chain_id === selectedNetwork);
 
   switch (type) {
     case "keplr":

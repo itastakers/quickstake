@@ -10,24 +10,31 @@ import IconButton from "@mui/material/IconButton";
 import PublicIcon from "@mui/icons-material/Public";
 import DelegateModal from "./delegate-modal";
 import { Alert } from "@mui/material";
+import NewChainModal from "../new-chain-modal";
 
 const ValidatorList = () => {
   const [state] = useContext(GlobalContext);
   const [rows, setRows] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [chainModalOpen, setChainModalOpen] = useState(false);
   const [validator, setValidator] = useState({});
 
   const openModal = (validator) => {
     setValidator(validator);
-
     setModalOpen(true);
   };
 
+  const openChainModal = () => {
+    setChainModalOpen(true);
+  }
+
   useEffect(() => {
-    const chain = chains.find(
+    const mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
+    const chain = mergedChains.find(
       (chain) => chain.chain_id === state.selectedNetwork
     );
+
     setRows([]);
     axios
       .get(chain.lcd + "/staking/validators")
@@ -140,6 +147,12 @@ const ValidatorList = () => {
         validator={validator}
         handleClose={() => {
           setModalOpen(false);
+        }}
+      />
+      <NewChainModal
+        open={chainModalOpen}
+        handleClose={() => {
+          setChainModalOpen(false);
         }}
       />
       <DataGrid
