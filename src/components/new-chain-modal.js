@@ -1,7 +1,8 @@
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { Typography, TextField, Grid } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { GlobalContext } from "../context/store";
 import Button from "@mui/material/Button";
 import chains from "../data/chains.json";
 
@@ -17,6 +18,7 @@ const style = {
 };
 
 const NewChainModal = ({ open, handleClose }) => {
+    const [state, dispatch] = useContext(GlobalContext);
     const [values, setValues] = useState({
         name: '',
         chain_id: '',
@@ -43,6 +45,8 @@ const NewChainModal = ({ open, handleClose }) => {
 
         // Success
         handleClose()
+
+        dispatch({ type: "SET_SELECTED_NETWORK", payload: values.chain_id, chain: values });
     }
 
     return (

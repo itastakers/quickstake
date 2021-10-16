@@ -6,6 +6,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import AdddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Grid from "@mui/material/Grid";
 import { GlobalContext } from "../context/store";
 import NewChainModal from "./new-chain-modal";
@@ -24,7 +25,17 @@ const NetworkSelect = () => {
     setChainModalOpen(true);
   }
 
-  const mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
+  const deleteLocalChain = () => {
+    let localChains = JSON.parse(localStorage.getItem('localChains'))
+    localChains = localChains.filter((localChain) => localChain.chain_id !== selectedChain.chain_id)
+    localStorage.setItem('localChains', JSON.stringify(localChains))
+    dispatch({ type: "SET_SELECTED_NETWORK", payload: chains[0].chain_id, chain: chains[0] });
+  }
+
+  let mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
+  const selectedChain = mergedChains.find(
+    (chain) => chain.chain_id === state.selectedNetwork
+  );
 
   const handleChange = (event) => {
     const chain = mergedChains.find((c) => c.chain_id === event.target.value);
@@ -81,7 +92,7 @@ const NetworkSelect = () => {
             </FormControl>
           </Stack>
         </Grid>
-        <Grid item lg={2}>
+        <Grid item lg={5} spacing={2}>
           <Button
             onClick={() =>
               openChainModal()
@@ -89,6 +100,17 @@ const NetworkSelect = () => {
             variant="contained" endIcon={<AdddIcon />}>
             Add New
           </Button>
+          {selectedChain.group === 'local' &&
+            <Button
+              onClick={() =>
+                deleteLocalChain()
+              }
+              sx={{ ml: 2 }}
+              variant="contained"
+              color="error">
+              <DeleteIcon />
+            </Button>
+          }
         </Grid>
       </Grid>
     </>
