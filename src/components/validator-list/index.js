@@ -20,6 +20,7 @@ const ValidatorList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalUndelegateOpen, setModalUndelegateOpen] = useState(false);
   const [validator, setValidator] = useState({});
+  const [allDelegations, setAllDelegations] = useState([]);
 
   const openModal = (validator) => {
     setValidator(validator);
@@ -31,19 +32,30 @@ const ValidatorList = () => {
     setModalUndelegateOpen(true);
   };
 
+  const getDelegations = async () => {
+
+  }
+  
   useEffect(() => {
     const chain = chains.find(
       (chain) => chain.chain_id === state.selectedNetwork
     );
+
     setRows([]);
     axios
       .get(chain.lcd + "/staking/validators")
       .then((res) => {
-        getAllDelegations(state.address, state.chain.rpc).then((result => {
-          const validators = res.data.result;
-          console.log(result)
-
-          var newRows = validators.map((validator) => {
+        const validators = res.data.result;
+        if (state.address) {
+          getAllDelegations(state.address, chain.rpc).then((result => {
+            setAllDelegations(result.delegationResponses);
+            createNewRows(result.delegationResponses);
+          })).catch((err => console.log(err)))
+        } else {
+          createNewRows([]);
+        }
+        const createNewRows = (delegationResponses) => {
+          const newRows = validators.map((validator) => {
             return {
               id: validator.operator_address,
               name: {
@@ -58,15 +70,15 @@ const ValidatorList = () => {
               action: {
                 address: validator.operator_address,
                 name: validator.description.moniker,
-                delegated: !!result.delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address),
+                delegated: delegationResponses.length > 0 ? !! delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
               },
             };
           });
           setRows(newRows);
-        })).catch((err => console.log(err)))
+        }
       })
       .catch((err) => console.log(err));
-  }, [state.selectedNetwork]);
+  }, [state.selectedNetwork, state.address]);
 
   const columns = [
     {
