@@ -46,14 +46,6 @@ const ValidatorList = () => {
       .get(chain.lcd + "/staking/validators")
       .then((res) => {
         const validators = res.data.result;
-        if (state.address) {
-          getAllDelegations(state.address, chain.rpc).then((result => {
-            setAllDelegations(result.delegationResponses);
-            createNewRows(result.delegationResponses);
-          })).catch((err => console.log(err)))
-        } else {
-          createNewRows([]);
-        }
         const createNewRows = (delegationResponses) => {
           const newRows = validators.map((validator) => {
             return {
@@ -75,6 +67,14 @@ const ValidatorList = () => {
             };
           });
           setRows(newRows);
+        }
+        if (state.address) {
+          getAllDelegations(state.address, chain.rpc).then((result => {
+            setAllDelegations(result.delegationResponses);
+            createNewRows(result.delegationResponses);
+          })).catch((err => console.log(err)))
+        } else {
+          createNewRows([]);
         }
       })
       .catch((err) => console.log(err));
