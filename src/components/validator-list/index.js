@@ -35,7 +35,7 @@ const ValidatorList = () => {
   const getDelegations = async () => {
 
   }
-  
+
   useEffect(() => {
     const chain = chains.find(
       (chain) => chain.chain_id === state.selectedNetwork
@@ -62,7 +62,7 @@ const ValidatorList = () => {
               action: {
                 address: validator.operator_address,
                 name: validator.description.moniker,
-                delegated: delegationResponses.length > 0 ? !! delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
+                delegated: delegationResponses.length > 0 ? !!delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
               },
             };
           });
@@ -72,7 +72,10 @@ const ValidatorList = () => {
           getAllDelegations(state.address, chain.rpc).then((result => {
             setAllDelegations(result.delegationResponses);
             createNewRows(result.delegationResponses);
-          })).catch((err => console.log(err)))
+          })).catch((() => {
+            createNewRows([]);
+          }
+          ))
         } else {
           createNewRows([]);
         }
