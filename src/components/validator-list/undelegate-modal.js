@@ -1,6 +1,5 @@
 import { Modal, Typography, Box, TextField, Button, LinearProgress } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import TextField from "@mui/material/TextField";
 import { GlobalContext } from "../../context/store";
 import { getDelegation, undelegate, getUnbondingDelegation } from "../../utils/cosmos";
 
@@ -17,7 +16,6 @@ const style = {
 
 const UndelegateModal = ({ open, validator, handleClose }) => {
   const [state, dispatch] = useContext(GlobalContext);
-
   const [undelegation, setUndelegation] = useState(0);
   const [currentDelegation, setCurrentDelegation] = useState(null);
   const [totalUnbonding, setTotalUnbonding] = useState(0);
