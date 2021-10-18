@@ -49,7 +49,7 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
 
 
     }
-  }, [open])
+  }, [validator])
 
   const handleUndelegate = async () => {
     let undelegationAmount = parseFloat(undelegation) * 1000000;
