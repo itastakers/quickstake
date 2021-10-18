@@ -24,17 +24,20 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
 
   const [undelegation, setUndelegation] = useState(0);
   const [currentDelegation, setCurrentDelegation] = useState(null);
-  const [unbondingDelegations, setUnbondingDelegations] = useState([]);
   const [totalUnbonding, setTotalUnbonding] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (validator.address) {
+      getDelegation(state.signingClient, state.address, validator.address)
+        .then(result => setCurrentDelegation(result.amount / 1000000))
+        .catch(() => setCurrentDelegation(0))
+    }
+    if (state.address) {
       getUnbondingDelegation(validator.address, state.address, state.chain.rpc)
         .then(result => {
-          setUnbondingDelegations(result.unbond.entries)
           let total = 0;
-          unbondingDelegations.map(unDel => {
+          result.unbond.entries.map(unDel => {
             total += parseInt(unDel.balance);
           })
           setTotalUnbonding(total / 1000000)
@@ -42,12 +45,8 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
         .catch(() => {
           setTotalUnbonding(0)
         })
-
-      getDelegation(state.signingClient, state.address, validator.address)
-        .then(result => setCurrentDelegation(result.amount / 1000000))
-        .catch(() => setCurrentDelegation(0))
     }
-  }, [open])
+  }, [open, state.address])
 
   const handleUndelegate = async () => {
     let undelegationAmount = parseFloat(undelegation) * 1000000;
