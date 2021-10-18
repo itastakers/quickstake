@@ -34,12 +34,7 @@ const style = {
 const UnbondingModal = ({ open, handleClose }) => {
 
     const [state, dispatch] = useContext(GlobalContext);
-
-    const [undelegation, setUndelegation] = useState(0);
-    const [currentDelegation, setCurrentDelegation] = useState(null);
-    const [unbondingDelegations, setUnbondingDelegations] = useState([]);
     const [totalUnbonding, setTotalUnbonding] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [denom, setDenom] = useState("");
     const chain = chains.find(
         (chain) => chain.chain_id === state.selectedNetwork
@@ -47,7 +42,6 @@ const UnbondingModal = ({ open, handleClose }) => {
 
     useEffect(() => {
         if (state.address) {
-
             setDenom(chain.coinDenom)
             getAllUnbondingDelegations(state.address, state.chain.rpc)
                 .then(result => {
@@ -68,10 +62,9 @@ const UnbondingModal = ({ open, handleClose }) => {
                     setTotalUnbonding([])
                 })
         }
-    }, [open])
+    }, [state.address])
 
     function createData(entry, name) {
-        console.log(entry.entries)
         return {
             address: entry.delegatorAddress,
             name: name,

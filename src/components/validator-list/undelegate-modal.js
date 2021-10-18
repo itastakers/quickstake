@@ -46,10 +46,8 @@ const UndelegateModal = ({ open, validator, handleClose }) => {
       getDelegation(state.signingClient, state.address, validator.address)
         .then(result => setCurrentDelegation(result.amount / 1000000))
         .catch(() => setCurrentDelegation(0))
-
-
     }
-  }, [validator])
+  }, [open])
 
   const handleUndelegate = async () => {
     let undelegationAmount = parseFloat(undelegation) * 1000000;

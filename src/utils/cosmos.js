@@ -43,3 +43,8 @@ export const getAllUnbondingDelegations = async (delegator, rpcUrl) => {
   const client = await makeClientWithStaking(rpcUrl);
   return await client?.staking.delegatorUnbondingDelegations(delegator);
 }
+
+export const getAllDelegations = async (delegator, rpcUrl) => {
+  const client = await makeClientWithStaking(rpcUrl);
+  return await client?.staking.delegatorDelegations(delegator);
+}

@@ -11,6 +11,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import DelegateModal from "./delegate-modal";
 import UndelegateModal from "./undelegate-modal";
 import { Alert } from "@mui/material";
+import { getAllDelegations } from "../../utils/cosmos";
 
 const ValidatorList = () => {
   const [state] = useContext(GlobalContext);
@@ -38,28 +39,31 @@ const ValidatorList = () => {
     axios
       .get(chain.lcd + "/staking/validators")
       .then((res) => {
-        const validators = res.data.result;
+        getAllDelegations(state.address, state.chain.rpc).then((result => {
+          const validators = res.data.result;
+          console.log(result)
 
-        var newRows = validators.map((validator) => {
-          return {
-            id: validator.operator_address,
-            name: {
-              moniker: validator.description.moniker,
+          var newRows = validators.map((validator) => {
+            return {
+              id: validator.operator_address,
+              name: {
+                moniker: validator.description.moniker,
+                address: validator.operator_address,
+              },
+              link: validator.description.website,
               address: validator.operator_address,
-            },
-            link: validator.description.website,
-            address: validator.operator_address,
-            commission: validator.commission.commission_rates.rate,
-            status: validator.status,
-            tokens: parseFloat(validator.delegator_shares),
-            action: {
-              address: validator.operator_address,
-              name: validator.description.moniker,
-            },
-          };
-        });
-
-        setRows(newRows);
+              commission: validator.commission.commission_rates.rate,
+              status: validator.status,
+              tokens: parseFloat(validator.delegator_shares),
+              action: {
+                address: validator.operator_address,
+                name: validator.description.moniker,
+                delegated: !!result.delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address),
+              },
+            };
+          });
+          setRows(newRows);
+        })).catch((err => console.log(err)))
       })
       .catch((err) => console.log(err));
   }, [state.selectedNetwork]);
@@ -130,15 +134,17 @@ const ValidatorList = () => {
           >
             Delegate
           </Button>
-          <Button
-            variant="contained"
-            color="error"
-            size="small"
-            style={{ marginLeft: 16 }}
-            onClick={() => openUndelgateModal(params.value)}
-          >
-            Undelegate
-          </Button>
+          {params.value.delegated &&
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              style={{ marginLeft: 16 }}
+              onClick={() => openUndelgateModal(params.value)}
+            >
+              Undelegate
+            </Button>
+          }
         </>
       ),
     },
