@@ -1,25 +1,11 @@
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
+import { Modal, Typography, Box, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Alert, } from "@mui/material";
+import { KeyboardArrowDownIcon, KeyboardArrowUpIcon } from "@mui/icons-material";
 import React, { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../context/store";
 import axios from "axios";
 import chains from "../data/chains.json";
 import { getAllUnbondingDelegations } from "../utils/cosmos";
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Alert from '@mui/material/Alert';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
 
 const style = {
     position: "absolute",

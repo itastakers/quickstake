@@ -1,12 +1,8 @@
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import { Modal, Typography, Box, TextField, Button, LinearProgress } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import { GlobalContext } from "../../context/store";
 import { getDelegation, undelegate, getUnbondingDelegation } from "../../utils/cosmos";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
 
 const style = {
   position: "absolute",

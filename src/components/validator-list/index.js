@@ -3,14 +3,10 @@ import { GlobalContext } from "../../context/store";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import chains from "../../data/chains.json";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
+import { Button, Typography, Box, IconButton, Alert } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
 import DelegateModal from "./delegate-modal";
 import UndelegateModal from "./undelegate-modal";
-import { Alert } from "@mui/material";
 import { getAllDelegations } from "../../utils/cosmos";
 
 const ValidatorList = () => {

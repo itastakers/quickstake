@@ -1,13 +1,7 @@
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import React, { useContext, useEffect, useState } from "react";
-import TextField from "@mui/material/TextField";
+import { Modal, Typography, Box, Button, Alert, LinearProgress, TextField } from "@mui/material";
+import React, { useContext, useState } from "react";
 import { GlobalContext } from "../../context/store";
-import { delegate, getDelegation, renderBalance } from "../../utils/cosmos";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
-import { Alert } from "@mui/material";
+import { delegate, renderBalance } from "../../utils/cosmos";
 
 const style = {
   position: "absolute",
