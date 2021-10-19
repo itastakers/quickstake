@@ -68,7 +68,7 @@ const ValidatorList = () => {
           getAllDelegations(state.address, chain.rpc).then((result => {
             setAllDelegations(result.delegationResponses);
             createNewRows(result.delegationResponses);
-          })).catch((err => console.log(err)))
+          })).catch(() => createNewRows([]))
         } else {
           createNewRows([]);
         }
