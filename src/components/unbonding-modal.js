@@ -1,11 +1,24 @@
-import { Modal, Typography, Box, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Alert, } from "@mui/material";
-import { KeyboardArrowDownIcon, KeyboardArrowUpIcon } from "@mui/icons-material";
+import Modal from "@mui/material/Modal";
+import Typography from "@mui/material/Typography";
 import React, { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../context/store";
 import axios from "axios";
 import chains from "../data/chains.json";
 import { getAllUnbondingDelegations } from "../utils/cosmos";
 import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 
 const style = {
     position: "absolute",
@@ -21,7 +34,12 @@ const style = {
 const UnbondingModal = ({ open, handleClose }) => {
 
     const [state, dispatch] = useContext(GlobalContext);
+
+    const [undelegation, setUndelegation] = useState(0);
+    const [currentDelegation, setCurrentDelegation] = useState(null);
+    const [unbondingDelegations, setUnbondingDelegations] = useState([]);
     const [totalUnbonding, setTotalUnbonding] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [denom, setDenom] = useState("");
     const chain = chains.find(
         (chain) => chain.chain_id === state.selectedNetwork
@@ -29,6 +47,7 @@ const UnbondingModal = ({ open, handleClose }) => {
 
     useEffect(() => {
         if (state.address) {
+
             setDenom(chain.coinDenom)
             getAllUnbondingDelegations(state.address, state.chain.rpc)
                 .then(result => {
@@ -49,9 +68,10 @@ const UnbondingModal = ({ open, handleClose }) => {
                     setTotalUnbonding([])
                 })
         }
-    }, [state.address])
+    }, [open])
 
     function createData(entry, name) {
+        console.log(entry.entries)
         return {
             address: entry.delegatorAddress,
             name: name,
@@ -145,28 +165,24 @@ const UnbondingModal = ({ open, handleClose }) => {
                 >
                     All unbonding assets
                 </Typography>
-                {state.address ?
-                    <TableContainer component={Paper}>
-                        <Table aria-label="collapsible table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell />
-                                    <TableCell>Validator</TableCell>
-                                    <TableCell>Adress</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            {totalUnbonding.length > 0 &&
-                                <TableBody>
-                                    {totalUnbonding.map((row) => (
-                                        <Row key={row.name} row={row} />
-                                    ))}
-                                </TableBody>
-                            }
-                        </Table>
-                    </TableContainer>
-                    :
-                    <Alert severity="error">Please connect your wallet!</Alert>
-                }
+                <TableContainer component={Paper}>
+                    <Table aria-label="collapsible table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell />
+                                <TableCell>Validator</TableCell>
+                                <TableCell>Adress</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        {totalUnbonding.length > 0 &&
+                            <TableBody>
+                                {totalUnbonding.map((row) => (
+                                    <Row key={row.name} row={row} />
+                                ))}
+                            </TableBody>
+                        }
+                    </Table>
+                </TableContainer>
             </Box>
         </Modal>
     );
