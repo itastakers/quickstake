@@ -63,7 +63,6 @@ const UnbondingModal = ({ open, handleClose }) => {
     }, [open])
 
     function createData(entry, name) {
-        console.log(entry.entries)
         return {
             address: entry.delegatorAddress,
             name: name,
@@ -133,8 +132,8 @@ const UnbondingModal = ({ open, handleClose }) => {
         row: PropTypes.shape({
             history: PropTypes.arrayOf(
                 PropTypes.shape({
-                    amount: PropTypes.number.isRequired,
-                    date: PropTypes.string.isRequired,
+                    amount: PropTypes.number,
+                    date: PropTypes.string,
                 }),
             ).isRequired,
         }).isRequired,
