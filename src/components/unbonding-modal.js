@@ -33,22 +33,14 @@ const style = {
 
 const UnbondingModal = ({ open, handleClose }) => {
 
-    const [state, dispatch] = useContext(GlobalContext);
-
-    const [undelegation, setUndelegation] = useState(0);
-    const [currentDelegation, setCurrentDelegation] = useState(null);
-    const [unbondingDelegations, setUnbondingDelegations] = useState([]);
+    const [state] = useContext(GlobalContext);
     const [totalUnbonding, setTotalUnbonding] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [denom, setDenom] = useState("");
     const chain = chains.find(
         (chain) => chain.chain_id === state.selectedNetwork
     );
 
     useEffect(() => {
         if (state.address) {
-
-            setDenom(chain.coinDenom)
             getAllUnbondingDelegations(state.address, state.chain.rpc)
                 .then(result => {
                     axios
@@ -57,9 +49,9 @@ const UnbondingModal = ({ open, handleClose }) => {
                             const validators = res.data.result
                             const arr = [];
                             result.unbondingResponses.map((entry) => {
-                                const name = (validators.find(el => el.operator_address == entry.validatorAddress)).description.moniker
+                                const name = (validators.find(el => el.operator_address === entry.validatorAddress)).description.moniker
                                 const rowEntry = createData(entry, name)
-                                arr.push(rowEntry);
+                                return arr.push(rowEntry);
                             })
                             setTotalUnbonding(arr);
                         })

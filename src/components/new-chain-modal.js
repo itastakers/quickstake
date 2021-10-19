@@ -134,7 +134,7 @@ const NewChainModal = ({ open, handleClose }) => {
                     <Grid item xs={6}>
                     <TextField
                             onChange={handleChange("decimals")}
-                            placeholder={placeholders.decimals}
+                            placeholder={placeholders.decimals.toString()}
                             label="Decimals"
                             fullWidth
                             sx={{ mb: 2 }}

@@ -78,7 +78,7 @@ const NetworkSelect = () => {
                     ));
 
                   if (options.length === 0) {
-                    return (<></>)
+                    return (<div key={group.id}></div>)
                   }
 
                   let childrens = [];
@@ -92,7 +92,7 @@ const NetworkSelect = () => {
             </FormControl>
           </Stack>
         </Grid>
-        <Grid item lg={5} spacing={2}>
+        <Grid item lg={5}>
           <Button
             onClick={() =>
               openChainModal()
