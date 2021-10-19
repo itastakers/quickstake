@@ -1,12 +1,7 @@
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import { Modal, Typography, Box, Button, Alert, LinearProgress, TextField } from "@mui/material";
 import React, { useContext, useState } from "react";
-import TextField from "@mui/material/TextField";
 import { GlobalContext } from "../../context/store";
 import { delegate, renderBalance } from "../../utils/cosmos";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
 
 const style = {
   position: "absolute",
@@ -23,11 +18,11 @@ const DelegateModal = ({ open, validator, handleClose }) => {
   const [state, dispatch] = useContext(GlobalContext);
 
   const [delegation, setDelegation] = useState(0);
-  const [currentDelegation] = useState(0);
+  const [currentDelegation, setCurrentDelegation] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const handleDelegate = async () => {
-    let delegationAmount = parseInt(delegation) * 1000000;
+    let delegationAmount = parseFloat(delegation) * 1000000;
     setLoading(true);
 
     try {
@@ -105,38 +100,44 @@ const DelegateModal = ({ open, validator, handleClose }) => {
         >
           Delegate to {validator.name}
         </Typography>
-        <Typography
-          id="modal-modal-description"
-          variant="subtitle1"
-          sx={{ mb: 2 }}
-        >
-          <b>Your Balance:</b> {renderBalance(state.chain, state.balance)}
-          {currentDelegation > 0 && (
-            <>
-              <br />
-              <b>Current Delegation:</b>{" "}
-              {renderBalance(state.chain, currentDelegation)}{" "}
-            </>
-          )}
-        </Typography>
-        <TextField
-          id="outlined-required"
-          label="Delegation Amount"
-          fullWidth
-          value={delegation}
-          onChange={(e) => setDelegation(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-        <Button
-          variant="contained"
-          disabled={loading}
-          onClick={() => {
-            handleDelegate();
-          }}
-        >
-          Delegate
-        </Button>
-        {loading && <LinearProgress sx={{ mt: 2 }} />}
+        {state.address ?
+          <>
+            <Typography
+              id="modal-modal-description"
+              variant="subtitle1"
+              sx={{ mb: 2 }}
+            >
+              <b>Your Balance:</b> {renderBalance(state.chain, state.balance)}
+              {currentDelegation > 0 && (
+                <>
+                  <br />
+                  <b>Current Delegation:</b>{" "}
+                  {renderBalance(state.chain, currentDelegation)}{" "}
+                </>
+              )}
+            </Typography>
+            <TextField
+              id="outlined-required"
+              label="Delegation Amount"
+              fullWidth
+              value={delegation}
+              onChange={(e) => setDelegation(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              disabled={loading}
+              onClick={() => {
+                handleDelegate();
+              }}
+            >
+              Delegate
+            </Button>
+            {loading && <LinearProgress sx={{ mt: 2 }} />}
+          </>
+          :
+          <Alert severity="error">Please connect your wallet!</Alert>
+        }
       </Box>
     </Modal>
   );
