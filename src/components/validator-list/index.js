@@ -34,46 +34,46 @@ const ValidatorList = () => {
 
   useEffect(() => {
     const chain = chains.find(
-        (chain) => chain.chain_id === state.selectedNetwork
+      (chain) => chain.chain_id === state.selectedNetwork
     );
 
     setRows([]);
     axios
-        .get(chain.lcd + "/staking/validators")
-        .then((res) => {
-          const validators = res.data.result;
-          if (state.address) {
-            getAllDelegations(state.address, chain.rpc).then((result => {
-              setAllDelegations(result.delegationResponses);
-              createNewRows(result.delegationResponses);
-            })).catch((err => console.log(err)))
-          } else {
-            createNewRows([]);
-          }
-          const createNewRows = (delegationResponses) => {
-            const newRows = validators.map((validator) => {
-              return {
-                id: validator.operator_address,
-                name: {
-                  moniker: validator.description.moniker,
-                  address: validator.operator_address,
-                },
-                link: validator.description.website,
+      .get(chain.lcd + "/staking/validators")
+      .then((res) => {
+        const validators = res.data.result;
+        const createNewRows = (delegationResponses) => {
+          const newRows = validators.map((validator) => {
+            return {
+              id: validator.operator_address,
+              name: {
+                moniker: validator.description.moniker,
                 address: validator.operator_address,
-                commission: validator.commission.commission_rates.rate,
-                status: validator.status,
-                tokens: parseFloat(validator.delegator_shares),
-                action: {
-                  address: validator.operator_address,
-                  name: validator.description.moniker,
-                  delegated: delegationResponses.length > 0 ? !! delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
-                },
-              };
-            });
-            setRows(newRows);
-          }
-        })
-        .catch((err) => console.log(err));
+              },
+              link: validator.description.website,
+              address: validator.operator_address,
+              commission: validator.commission.commission_rates.rate,
+              status: validator.status,
+              tokens: parseFloat(validator.delegator_shares),
+              action: {
+                address: validator.operator_address,
+                name: validator.description.moniker,
+                delegated: delegationResponses.length > 0 ? !!delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
+              },
+            };
+          });
+          setRows(newRows);
+        }
+        if (state.address) {
+          getAllDelegations(state.address, chain.rpc).then((result => {
+            setAllDelegations(result.delegationResponses);
+            createNewRows(result.delegationResponses);
+          })).catch((err => console.log(err)))
+        } else {
+          createNewRows([]);
+        }
+      })
+      .catch((err) => console.log(err));
   }, [state.selectedNetwork, state.address]);
 
   const columns = [
@@ -82,12 +82,12 @@ const ValidatorList = () => {
       headerName: "Name",
       width: 500,
       renderCell: (params) => (
-          <Box>
-            <Typography variant="h6">{params.value.moniker}</Typography>
-            <Typography sx={{ fontFamily: "monospace" }} variant="subtitle2">
-              {params.value.address}
-            </Typography>
-          </Box>
+        <Box>
+          <Typography variant="h6">{params.value.moniker}</Typography>
+          <Typography sx={{ fontFamily: "monospace" }} variant="subtitle2">
+            {params.value.address}
+          </Typography>
+        </Box>
       ),
     },
     {
@@ -101,7 +101,7 @@ const ValidatorList = () => {
       headerName: "Commission",
       width: 120,
       renderCell: (params) => (
-          <>{(parseFloat(params.value) * 100).toFixed(2)} % </>
+        <>{(parseFloat(params.value) * 100).toFixed(2)} % </>
       ),
     },
     {
@@ -114,15 +114,15 @@ const ValidatorList = () => {
         }
 
         return (
-            <IconButton
-                component="a"
-                href={params.value}
-                target="_blank"
-                aria-label="delete"
-                color="primary"
-            >
-              <PublicIcon />
-            </IconButton>
+          <IconButton
+            component="a"
+            href={params.value}
+            target="_blank"
+            aria-label="delete"
+            color="primary"
+          >
+            <PublicIcon />
+          </IconButton>
         );
       },
     },
@@ -132,64 +132,64 @@ const ValidatorList = () => {
       headerName: "Action",
       width: 280,
       renderCell: (params) => (
-          <>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            style={{ marginLeft: 16 }}
+            onClick={() => openModal(params.value)}
+          >
+            Delegate
+          </Button>
+          {params.value.delegated &&
             <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                style={{ marginLeft: 16 }}
-                onClick={() => openModal(params.value)}
-            >
-              Delegate
-            </Button>
-            {params.value.delegated &&
-            <Button
-                variant="contained"
-                color="error"
-                size="small"
-                style={{ marginLeft: 16 }}
-                onClick={() => openUndelgateModal(params.value)}
+              variant="contained"
+              color="error"
+              size="small"
+              style={{ marginLeft: 16 }}
+              onClick={() => openUndelgateModal(params.value)}
             >
               Undelegate
             </Button>
-            }
-          </>
+          }
+        </>
       ),
     },
   ];
 
   return (
-      <>
-        {state.message && (
-            <Alert sx={{ mb: 3 }} severity={state.message.severity}>
-              {state.message.text}
-            </Alert>
-        )}
+    <>
+      {state.message && (
+        <Alert sx={{ mb: 3 }} severity={state.message.severity}>
+          {state.message.text}
+        </Alert>
+      )}
 
-        <DelegateModal
-            open={modalOpen}
-            validator={validator}
-            handleClose={() => {
-              setModalOpen(false);
-            }}
-        />
-        <UndelegateModal
-            open={modalUndelegateOpen}
-            validator={validator}
-            handleClose={() => {
-              setModalUndelegateOpen(false);
-            }}
-        />
-        <DataGrid
-            rows={rows}
-            rowHeight={80}
-            columns={columns}
-            pageSize={100}
-            rowsPerPageOptions={[100]}
-            disableSelectionOnClick
-            autoHeight
-        />
-      </>
+      <DelegateModal
+        open={modalOpen}
+        validator={validator}
+        handleClose={() => {
+          setModalOpen(false);
+        }}
+      />
+      <UndelegateModal
+        open={modalUndelegateOpen}
+        validator={validator}
+        handleClose={() => {
+          setModalUndelegateOpen(false);
+        }}
+      />
+      <DataGrid
+        rows={rows}
+        rowHeight={80}
+        columns={columns}
+        pageSize={100}
+        rowsPerPageOptions={[100]}
+        disableSelectionOnClick
+        autoHeight
+      />
+    </>
   );
 };
 
