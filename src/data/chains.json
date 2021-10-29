@@ -24,6 +24,19 @@
     "group": "testnet"
   },
   {
+    "name": "BitSong",
+    "chain_id": "bitsong-2b",
+    "lcd": "https://lcd-bitsong.itastakers.com",
+    "rpc": "https://rpc-bitsong.itastakers.com", 
+    "coinDenom": "BTSG",
+    "coinMinimalDenom": "ubtsg",
+    "prefix": "bitsong",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "mainnet",
+    "coinType": 639
+  },
+  {
     "name": "BitSong Testnet",
     "chain_id": "bitsong-testnet-6",
     "lcd": "https://api.testnet.bitsong.network",

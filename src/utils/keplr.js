@@ -29,7 +29,7 @@ export const suggestChain = async (chain) => {
       coinDecimals: 6,
     },
     bip44: {
-      coinType: 118,
+      coinType: chain.coinType ?? 118,
     },
     bech32Config: {
       bech32PrefixAccAddr: chain.prefix,
@@ -53,7 +53,7 @@ export const suggestChain = async (chain) => {
         coinDecimals: 6,
       },
     ],
-    coinType: 118,
+    coinType: chain.coinType ?? 118,
     gasPriceStep: {
       low: 0.0,
       average: 0.01,
