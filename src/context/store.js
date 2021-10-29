@@ -71,14 +71,13 @@ const Store = ({ children }) => {
       console.log(
         "Key store in Keplr is changed. You may need to refetch the account info."
       );
-
       connectKeplr(state.chain, dispatch);
     });
 
     return () => {
       window.removeEventListener("keplr_keystorechange", () => {});
     };
-  }, []);
+  }, [state.chain]);
 
   return (
     <GlobalContext.Provider value={[state, dispatch]}>
