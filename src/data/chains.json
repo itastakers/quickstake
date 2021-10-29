@@ -12,6 +12,18 @@
     "group": "mainnet"
   },
   {
+    "name": "Stargaze",
+    "chain_id": "stargaze-1",
+    "lcd": "https://lcd-stargaze.itastakers.com",
+    "rpc": "https://rpc-stargaze.itastakers.com",
+    "coinDenom": "STARS",
+    "coinMinimalDenom": "ustars",
+    "prefix": "stars",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "mainnet"
+  },
+  {
     "name": "Juno Hera",
     "chain_id": "hera",
     "lcd": "https://lcd-juno-hera.itastakers.com",
