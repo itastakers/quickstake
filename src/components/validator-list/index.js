@@ -9,54 +9,72 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import PublicIcon from "@mui/icons-material/Public";
 import DelegateModal from "./delegate-modal";
+import UndelegateModal from "./undelegate-modal";
 import { Alert } from "@mui/material";
+import { getAllDelegations } from "../../utils/cosmos";
 
 const ValidatorList = () => {
   const [state] = useContext(GlobalContext);
   const [rows, setRows] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalUndelegateOpen, setModalUndelegateOpen] = useState(false);
   const [validator, setValidator] = useState({});
+  const [allDelegations, setAllDelegations] = useState([]);
 
   const openModal = (validator) => {
     setValidator(validator);
-
     setModalOpen(true);
+  };
+
+  const openUndelgateModal = (validator) => {
+    setValidator(validator);
+    setModalUndelegateOpen(true);
   };
 
   useEffect(() => {
     const chain = chains.find(
       (chain) => chain.chain_id === state.selectedNetwork
     );
+
     setRows([]);
     axios
       .get(chain.lcd + "/staking/validators")
       .then((res) => {
         const validators = res.data.result;
-
-        var newRows = validators.map((validator) => {
-          return {
-            id: validator.operator_address,
-            name: {
-              moniker: validator.description.moniker,
+        const createNewRows = (delegationResponses) => {
+          const newRows = validators.map((validator) => {
+            return {
+              id: validator.operator_address,
+              name: {
+                moniker: validator.description.moniker,
+                address: validator.operator_address,
+              },
+              link: validator.description.website,
               address: validator.operator_address,
-            },
-            link: validator.description.website,
-            address: validator.operator_address,
-            commission: validator.commission.commission_rates.rate,
-            status: validator.status,
-            tokens: parseFloat(validator.delegator_shares),
-            action: {
-              address: validator.operator_address,
-              name: validator.description.moniker,
-            },
-          };
-        });
-
-        setRows(newRows);
+              commission: validator.commission.commission_rates.rate,
+              status: validator.status,
+              tokens: parseFloat(validator.delegator_shares),
+              action: {
+                address: validator.operator_address,
+                name: validator.description.moniker,
+                delegated: delegationResponses.length > 0 ? !!delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
+              },
+            };
+          });
+          setRows(newRows);
+        }
+        if (state.address) {
+          getAllDelegations(state.address, chain.rpc).then((result => {
+            setAllDelegations(result.delegationResponses);
+            createNewRows(result.delegationResponses);
+          })).catch(() => createNewRows([]))
+        } else {
+          createNewRows([]);
+        }
       })
       .catch((err) => console.log(err));
-  }, [state.selectedNetwork]);
+  }, [state.selectedNetwork, state.address]);
 
   const columns = [
     {
@@ -81,7 +99,7 @@ const ValidatorList = () => {
     {
       field: "commission",
       headerName: "Commission",
-      width: 150,
+      width: 120,
       renderCell: (params) => (
         <>{(parseFloat(params.value) * 100).toFixed(2)} % </>
       ),
@@ -89,7 +107,7 @@ const ValidatorList = () => {
     {
       field: "link",
       headerName: "Links",
-      width: 100,
+      width: 90,
       renderCell: (params) => {
         if (params.value === undefined || params.value === "") {
           return <></>;
@@ -112,17 +130,30 @@ const ValidatorList = () => {
       field: "action",
       type: "actions",
       headerName: "Action",
-      width: 150,
+      width: 280,
       renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          style={{ marginLeft: 16 }}
-          onClick={() => openModal(params.value)}
-        >
-          Delegate
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            style={{ marginLeft: 16 }}
+            onClick={() => openModal(params.value)}
+          >
+            Delegate
+          </Button>
+          {params.value.delegated &&
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              style={{ marginLeft: 16 }}
+              onClick={() => openUndelgateModal(params.value)}
+            >
+              Undelegate
+            </Button>
+          }
+        </>
       ),
     },
   ];
@@ -140,6 +171,13 @@ const ValidatorList = () => {
         validator={validator}
         handleClose={() => {
           setModalOpen(false);
+        }}
+      />
+      <UndelegateModal
+        open={modalUndelegateOpen}
+        validator={validator}
+        handleClose={() => {
+          setModalUndelegateOpen(false);
         }}
       />
       <DataGrid

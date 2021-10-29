@@ -64,18 +64,28 @@ export const suggestChain = async (chain) => {
 };
 
 export const connectKeplr = async (chain, dispatch) => {
+
   // check browser compatibility
   if (!checkExtensionAndBrowser()) {
     return false;
   }
 
+
   // suggest chain and approve network
+  let error = false;
   await suggestChain(chain);
-  await window.keplr.enable(chain.chain_id);
+  await window.keplr.enable(chain.chain_id).catch((e) => {
+      console.log(e);
+      error = true;
+  });
+  
+  if (error) {
+    return false;
+  }
 
   // Setup signer
   const offlineSigner = window.getOfflineSignerOnlyAmino(chain.chain_id);
-  const accounts = await offlineSigner.getAccounts();
+  const accounts = await offlineSigner.getAccounts().catch((e) => console.log(e));
 
   dispatch({
     type: "SET_WALLET",
