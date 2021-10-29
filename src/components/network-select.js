@@ -31,8 +31,8 @@ const NetworkSelect = () => {
     localStorage.setItem('localChains', JSON.stringify(localChains))
     dispatch({ type: "SET_SELECTED_NETWORK", payload: chains[0].chain_id, chain: chains[0] });
   }
+  let mergedChains = typeof window !== 'undefined' && window ? (localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains) : chains;
 
-  let mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
   const selectedChain = mergedChains.find(
     (chain) => chain.chain_id === state.selectedNetwork
   );
