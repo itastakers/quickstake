@@ -91,7 +91,7 @@ const ConnectWallet = () => {
                   <ExtensionIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary="Keplr" secondary="Chorme extension" />
+              <ListItemText primary="Keplr" secondary="Chrome extension" />
             </ListItemButton>
             <ListItemButton
               disabled
