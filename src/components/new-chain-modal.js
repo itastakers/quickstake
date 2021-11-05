@@ -1,10 +1,8 @@
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import { Typography, TextField, Grid } from "@mui/material";
+import { Alert, Typography, TextField, Grid, Box, Modal, Button } from "@mui/material";
 import React, { useState, useContext } from "react";
 import { GlobalContext } from "../context/store";
-import Button from "@mui/material/Button";
 import chains from "../data/chains.json";
+import axios from "axios";
 
 const style = {
     position: "absolute",
@@ -33,20 +31,32 @@ const NewChainModal = ({ open, handleClose }) => {
     });
 
     const [placeholders] = useState(chains[0]);
+    const [error, setError] = useState(false);
 
     const handleChange = name => event => {
         setValues({ ...values, [name]: event.target.value })
     }
 
     const handleNewChain = () => {
-        const localChains = localStorage.getItem('localChains') ? JSON.parse(localStorage.getItem('localChains')) : []
-        localChains.push(values)
-        localStorage.setItem('localChains', JSON.stringify(localChains))
+        if (values.lcd && validateChain(values.lcd)) {
+            const localChains = localStorage.getItem('localChains') ? JSON.parse(localStorage.getItem('localChains')) : []
+            localChains.push(values)
+            localStorage.setItem('localChains', JSON.stringify(localChains))
 
-        // Success
-        handleClose()
+            // Success
+            handleClose()
 
-        dispatch({ type: "SET_SELECTED_NETWORK", payload: values.chain_id, chain: values });
+            dispatch({ type: "SET_SELECTED_NETWORK", payload: values.chain_id, chain: values });
+        } else {
+            setError(true);
+        }
+    }
+
+    const validateChain = (lcd) => {
+        axios
+            .get(lcd + "/node_info")
+            .then(() => true)
+            .catch(() => false)
     }
 
     return (
@@ -57,6 +67,7 @@ const NewChainModal = ({ open, handleClose }) => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
+                {error && <Alert severity="error">The chain you want to add is not valid!</Alert>}
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Typography
@@ -65,7 +76,7 @@ const NewChainModal = ({ open, handleClose }) => {
                             component="h2"
                             sx={{ mb: 2 }}
                         >
-                            Add a chain 
+                            Add a chain
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -132,7 +143,7 @@ const NewChainModal = ({ open, handleClose }) => {
                         />
                     </Grid>
                     <Grid item xs={6}>
-                    <TextField
+                        <TextField
                             onChange={handleChange("decimals")}
                             placeholder={placeholders.decimals.toString()}
                             label="Decimals"
