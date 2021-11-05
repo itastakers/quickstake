@@ -48,3 +48,22 @@ export const getAllDelegations = async (delegator, rpcUrl) => {
   const client = await makeClientWithStaking(rpcUrl);
   return await client?.staking.delegatorDelegations(delegator);
 }
+
+export const redelegate = async (chain, client, delegator, srcValidator, dstValidator, amount) => {
+  const redelegateMsg = {
+    typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+    value: {
+      delegatorAddress: delegator,
+      validatorSrcAddress: srcValidator,
+      validatorDstAddress: dstValidator,
+      amount: coin(amount, chain.coinMinimalDenom),
+    },
+  };
+
+  return client?.signAndBroadcast(
+    delegator,
+    [redelegateMsg],
+    { gas: "250000", amount: [{ denom: chain.coinMinimalDenom, amount: "0" }] },
+    ""
+  );
+}

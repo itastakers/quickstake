@@ -3,10 +3,12 @@ import { useState } from "react";
 import { Button, Menu, MenuItem, Box } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import UnbondingModal from "./unbonding-modal";
+import RedelegateModal from "./redelegate-modal";
 
 const MoreMenu = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [modalUnbondingOpen, setModalUnbondingOpen] = useState(false);
+    const [modalRedelegateOpen, setModalRedelegateOpen] = useState(false);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -39,13 +41,20 @@ const MoreMenu = () => {
                         'aria-labelledby': 'basic-button',
                     }}
                 >
-                    <MenuItem onClick={() => {handleClose(); setModalUnbondingOpen(true)}}>Unbonding Assets</MenuItem>
+                    <MenuItem onClick={() => { handleClose(); setModalUnbondingOpen(true) }}>Unbonding Assets</MenuItem>
+                    <MenuItem onClick={() => { handleClose(); setModalRedelegateOpen(true) }}>Redelegate Assets</MenuItem>
                 </Menu>
             </Box>
-            <UnbondingModal 
+            <UnbondingModal
                 open={modalUnbondingOpen}
                 handleClose={() => {
                     setModalUnbondingOpen(false);
+                }}
+            />
+            <RedelegateModal
+                open={modalRedelegateOpen}
+                handleClose={() => {
+                    setModalRedelegateOpen(false);
                 }}
             />
         </>
