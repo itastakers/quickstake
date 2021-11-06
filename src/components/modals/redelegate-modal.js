@@ -1,9 +1,9 @@
 import { Modal, LinearProgress, Alert, Typography, Box, FormControl, InputLabel, NativeSelect, Grid, Button, Input } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { GlobalContext } from "../context/store";
-import chains from "../data/chains.json";
+import { GlobalContext } from "../../context/store";
+import chains from "../../data/chains.json";
 import axios from "axios";
-import { getAllDelegations, redelegate } from "../utils/cosmos";
+import { getAllDelegations, redelegate } from "../../utils/cosmos";
 
 const style = {
     position: "absolute",

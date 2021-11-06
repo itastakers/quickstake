@@ -9,7 +9,7 @@ import AdddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Grid from "@mui/material/Grid";
 import { GlobalContext } from "../context/store";
-import NewChainModal from "./new-chain-modal";
+import NewChainModal from "./modals/new-chain-modal";
 
 import chains from "../data/chains.json";
 import groups from "../data/chain_groups.json";

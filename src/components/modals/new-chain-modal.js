@@ -1,7 +1,7 @@
 import { Alert, Typography, TextField, Grid, Box, Modal, Button } from "@mui/material";
 import React, { useState, useContext } from "react";
-import { GlobalContext } from "../context/store";
-import chains from "../data/chains.json";
+import { GlobalContext } from "../../context/store";
+import chains from "../../data/chains.json";
 import axios from "axios";
 
 const style = {

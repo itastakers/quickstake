@@ -1,9 +1,9 @@
 import {Modal, Alert, Typography, Box, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { GlobalContext } from "../context/store";
+import { GlobalContext } from "../../context/store";
 import axios from "axios";
-import chains from "../data/chains.json";
-import { getAllUnbondingDelegations } from "../utils/cosmos";
+import chains from "../../data/chains.json";
+import { getAllUnbondingDelegations } from "../../utils/cosmos";
 import PropTypes from 'prop-types';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
