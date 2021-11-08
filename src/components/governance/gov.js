@@ -56,7 +56,7 @@ const Gov = () => {
     };
 
     const NewLineToBr = ({ children = "" }) => {
-        return children.split('\n').reduce(function (arr, line) {
+        return children.replace(/\\n/g, '\n').split('\n').reduce(function (arr, line) {
             return arr.concat(
                 line,
                 <br />
@@ -125,9 +125,7 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
-                                                    {proposal.content.value.description.split('\n').map((item, key) => {
-                                                        return <span key={key}>{item}<br /></span>
-                                                    })}
+                                                    <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
                                             </Grid>
                                             <Grid item xs={1} />
@@ -229,9 +227,7 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
-                                                    {proposal.content.value.description.split('\n').map((item, key) => {
-                                                        return <span key={key}>{item}<br /></span>
-                                                    })}
+                                                    <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
                                             </Grid>
                                             <Grid item xs={1} />
