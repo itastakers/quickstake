@@ -76,16 +76,17 @@ const RewardsModal = ({ open, handleClose }) => {
                 >
                     Withdraw Rewards
                     <Box display="flex" justifyContent="flex-end">
-
-                        <Button
-                            variant="contained"
-                            color="success"
-                            size="small"
-                            style={{ marginLeft: 16 }}
-                            onClick={() => handleWithdrawAllRewards()}
-                        >
-                            Withdraw all
-                        </Button>
+                        {state.address &&
+                            <Button
+                                variant="contained"
+                                color="success"
+                                size="small"
+                                style={{ marginLeft: 16 }}
+                                onClick={() => handleWithdrawAllRewards()}
+                            >
+                                Withdraw all
+                            </Button>
+                        }
                     </Box>
                 </Typography>
                 {rewards.length > 0 ?
