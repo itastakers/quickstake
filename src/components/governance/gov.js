@@ -326,7 +326,7 @@ const Gov = () => {
                             <Pagination sx={{ py: 1 }} onChange={handleFailedPagination} count={Math.ceil(proposalsFailed.length / 3)} shape="rounded" />
                         </Grid>
                     </>
-                    : <Alert severity="info">There are no passed proposals!</Alert>}
+                    : <Alert severity="info">There are no failed proposals!</Alert>}
             </Paper>
         </>
     );
