@@ -58,7 +58,7 @@ const NetworkSelect = () => {
           setChainModalOpen(false);
         }}
       />
-      <Grid container spacing={2} sx={{ pt: 4, pb: 2 }}>
+      <Grid container spacing={2}>
         <Grid item lg={2}>
           <Stack direction="row" spacing={2}>
             <FormControl fullWidth size="small">
@@ -98,6 +98,7 @@ const NetworkSelect = () => {
         </Grid>
         <Grid item lg={5}>
           <Button
+            disableElevation
             onClick={() =>
               openChainModal()
             }

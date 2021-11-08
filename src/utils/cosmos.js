@@ -1,27 +1,27 @@
 import { coin } from "@cosmjs/proto-signing";
-import { setupStakingExtension, QueryClient, setupDistributionExtension } from "@cosmjs/stargate"
+import { setupStakingExtension, QueryClient, setupDistributionExtension, setupGovExtension } from "@cosmjs/stargate"
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import { ProposalStatus, TextProposal, VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov";
+
 
 /**
- * Create client for staking queries
+ * Make query client
  * 
  * @param {string} rpcUrl 
+ * @param {string} extension 
  * @returns 
  */
-async function makeClientWithStaking(rpcUrl) {
+async function makeClient(rpcUrl, extension) {
   const tmClient = await Tendermint34Client.connect(rpcUrl);
-  return QueryClient.withExtensions(tmClient, setupStakingExtension);
-}
 
-/**
- * Create client for distribution queries
- * 
- * @param {string} rpcUrl 
- * @returns 
- */
-async function makeClientWithDistribution(rpcUrl) {
-  const tmClient = await Tendermint34Client.connect(rpcUrl);
-  return QueryClient.withExtensions(tmClient, setupDistributionExtension);
+  switch (extension) {
+    case 'staking':
+      return QueryClient.withExtensions(tmClient, setupStakingExtension);
+    case 'distribution':
+      return QueryClient.withExtensions(tmClient, setupDistributionExtension);
+    case 'gov':
+      return QueryClient.withExtensions(tmClient, setupGovExtension)
+  }
 }
 
 /**
@@ -94,7 +94,7 @@ export const undelegate = async (chain, client, delegator, validator, amount) =>
  * @returns 
  */
 export const getUnbondingDelegation = async (validator, delegator, rpcUrl) => {
-  const client = await makeClientWithStaking(rpcUrl);
+  const client = await makeClient(rpcUrl, 'staking');
   return await client?.staking.unbondingDelegation(delegator, validator);
 }
 
@@ -106,7 +106,7 @@ export const getUnbondingDelegation = async (validator, delegator, rpcUrl) => {
  * @returns 
  */
 export const getAllUnbondingDelegations = async (delegator, rpcUrl) => {
-  const client = await makeClientWithStaking(rpcUrl);
+  const client = await makeClient(rpcUrl, 'staking');
   return await client?.staking.delegatorUnbondingDelegations(delegator);
 }
 
@@ -118,7 +118,7 @@ export const getAllUnbondingDelegations = async (delegator, rpcUrl) => {
  * @returns 
  */
 export const getAllDelegations = async (delegator, rpcUrl) => {
-  const client = await makeClientWithStaking(rpcUrl);
+  const client = await makeClient(rpcUrl, 'staking');
   return await client?.staking.delegatorDelegations(delegator);
 }
 
@@ -202,11 +202,11 @@ export const withdrawAllRewards = async (chain, client, delegator, validators) =
 }
 
 export const getAllRewards = async (delegator, rpcUrl) => {
-  const client = await makeClientWithDistribution(rpcUrl);
+  const client = await makeClient(rpcUrl, 'distribution');
   return await client?.distribution.delegationTotalRewards(delegator);
 }
 
 export const getReward = async (delegator, validator, rpcUrl) => {
-  const client = await makeClientWithDistribution(rpcUrl);
+  const client = await makeClient(rpcUrl, 'distribution');
   return await client?.distribution.delegationRewards(delegator, validator);
 }

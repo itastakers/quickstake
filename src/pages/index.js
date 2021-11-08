@@ -3,6 +3,7 @@ import Layout from "../components/layout";
 import { Grid, Typography, Box, Tabs, Tab } from "@mui/material";
 import NetworkSelect from "../components/network-select";
 import ValidatorList from "../components/validator-list";
+import Gov from "../components/governance/gov";
 import MoreMenu from "../components/more-menu";
 import PropTypes from 'prop-types';
 
@@ -58,8 +59,8 @@ const IndexPage = () => {
 
   return (
     <Layout>
-      <Grid container>
-        <Grid item xs={6}>
+      <Grid sx={{py: 4}} container>
+        <Grid alignSelf="center" item xs={6}>
           <NetworkSelect />
         </Grid>
         <Grid alignSelf="center" item xs={6}>
@@ -76,7 +77,7 @@ const IndexPage = () => {
         <ValidatorList />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Hi
+        <Gov />
       </TabPanel>
     </Layout>
   );
