@@ -157,48 +157,51 @@ const Gov = () => {
                                                 </Typography>
                                             </Grid>
                                             <Grid item xs={2}>
-                                                <ButtonGroup
-                                                    orientation="vertical"
-                                                    aria-label="vertical contained button group"
-                                                    variant="contained"
-                                                >
-                                                    <Button
+                                                {state.address ?
+                                                    <ButtonGroup
+                                                        orientation="vertical"
+                                                        aria-label="vertical contained button group"
                                                         variant="contained"
-                                                        color="success"
-                                                        disableElevation
-                                                        startIcon={<ThumbUp />}
-                                                        onClick={() => handleVote(1, proposal.id)}
                                                     >
-                                                        Yes
-                                                    </Button>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="warning"
-                                                        disableElevation
-                                                        startIcon={<ThumbsUpDown />}
-                                                        onClick={() => handleVote(2, proposal.id)}
-                                                    >
-                                                        Abstain
-                                                    </Button>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="error"
-                                                        disableElevation
-                                                        startIcon={<ThumbDownOutlined />}
-                                                        onClick={() => handleVote(3, proposal.id)}
-                                                    >
-                                                        No
-                                                    </Button>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="error"
-                                                        disableElevation
-                                                        startIcon={<ThumbDown />}
-                                                        onClick={() => handleVote(4, proposal.id)}
-                                                    >
-                                                        No with veto
-                                                    </Button>
-                                                </ButtonGroup>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="success"
+                                                            disableElevation
+                                                            startIcon={<ThumbUp />}
+                                                            onClick={() => handleVote(1, proposal.id)}
+                                                        >
+                                                            Yes
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="warning"
+                                                            disableElevation
+                                                            startIcon={<ThumbsUpDown />}
+                                                            onClick={() => handleVote(2, proposal.id)}
+                                                        >
+                                                            Abstain
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="error"
+                                                            disableElevation
+                                                            startIcon={<ThumbDownOutlined />}
+                                                            onClick={() => handleVote(3, proposal.id)}
+                                                        >
+                                                            No
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="error"
+                                                            disableElevation
+                                                            startIcon={<ThumbDown />}
+                                                            onClick={() => handleVote(4, proposal.id)}
+                                                        >
+                                                            No with veto
+                                                        </Button>
+                                                    </ButtonGroup>
+                                                    : <Alert severity="warning">Please connect your wallet to vote!</Alert>
+                                                }
                                             </Grid>
                                         </Grid>
                                     </AccordionDetails>
