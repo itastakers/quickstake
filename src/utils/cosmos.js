@@ -201,12 +201,50 @@ export const withdrawAllRewards = async (chain, client, delegator, validators) =
   )
 }
 
+/**
+ * 
+ * @param {string} delegator 
+ * @param {string} rpcUrl 
+ * @returns 
+ */
 export const getAllRewards = async (delegator, rpcUrl) => {
   const client = await makeClient(rpcUrl, 'distribution');
   return await client?.distribution.delegationTotalRewards(delegator);
 }
 
+/**
+ * 
+ * @param {string} delegator 
+ * @param {string} validator 
+ * @param {string} rpcUrl 
+ * @returns 
+ */
 export const getReward = async (delegator, validator, rpcUrl) => {
   const client = await makeClient(rpcUrl, 'distribution');
   return await client?.distribution.delegationRewards(delegator, validator);
+}
+
+/**
+ * 
+ * @param {*} chain 
+ * @param {*} client 
+ * @param {string} voter 
+ * @param {string} proposalId 
+ * @param {number} option 
+ * @returns 
+ */
+export const vote = async (chain, client, voter, proposalId, option) => {
+  const voteMessage = {
+    typeUrl: "/cosmos.gov.v1beta1.MsgVote",
+    value: {
+      proposalId,
+      voter,
+      option
+    }
+  }
+  return client?.signAndBroadcast(
+    voter,
+    [voteMessage],
+    { gas: "250000", amount: [{ denom: chain.coinMinimalDenom, amount: "0" }] },
+  )
 }

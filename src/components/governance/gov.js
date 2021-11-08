@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../context/store";
 import axios from "axios";
-import { Typography, Accordion, AccordionDetails, AccordionSummary, Stack, Chip, Grid, Alert, Paper, Pagination } from "@mui/material";
-import { ExpandMore } from "@mui/icons-material";
+import { Typography, Accordion, AccordionDetails, AccordionSummary, Stack, Chip, Grid, Alert, Paper, Pagination, Button, ButtonGroup } from "@mui/material";
+import { ExpandMore, ThumbUp, ThumbDown, ThumbsUpDown, ThumbDownAltOutlined, ThumbDownOutlined } from "@mui/icons-material";
 import Chart from "./chart";
+import { vote } from "../../utils/cosmos";
 
 const Gov = () => {
-    const [state] = useContext(GlobalContext);
+    const [state, dispatch] = useContext(GlobalContext);
     const [proposalsOngoing, setProposalsOngoing] = useState([]);
     const [proposalsPassed, setProposalsPassed] = useState([]);
     const [proposalsFailed, setProposalsFailed] = useState([]);
@@ -64,6 +65,20 @@ const Gov = () => {
         }, []);
     }
 
+    const handleVote = (option, proposalId) => {
+        vote(state.chain, state.signingClient, state.address, proposalId, option)
+            .then(res => console.log(res))
+            .catch(e => {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `${e}`,
+                        severity: "error",
+                    },
+                });
+            })
+    }
+
 
 
     useEffect(() => {
@@ -99,6 +114,11 @@ const Gov = () => {
 
     return (
         <>
+            {state.message && (
+                <Alert sx={{ mb: 3 }} severity={state.message.severity}>
+                    {state.message.text}
+                </Alert>
+            )}
             <Paper sx={{ mt: 3 }} elevation={0} variant="outlined">
                 <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
                     Ongoing Proposals
@@ -116,7 +136,7 @@ const Gov = () => {
                                         sx={{ borderBottom: '1px solid rgba(0,0,0,.2)' }}
                                     >
                                         <Stack direction="row">
-                                            <Chip size="small" label={formatDate(proposal.deposit_end_time)} color="success" />
+                                            <Chip size="small" label={formatDate(proposal.submit_time)} color="success" />
                                             <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="warning" />
                                         </Stack>
                                         <Typography sx={{ ml: 2 }}>{proposal.content.value.title}</Typography>
@@ -125,15 +145,60 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
+                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0].amount / 1000000}
+                                                    <br />
                                                     <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
                                             </Grid>
                                             <Grid item xs={1} />
-                                            <Grid item xs={3}>
+                                            <Grid item xs={1}>
                                                 <Typography>
                                                     <strong>Vote: </strong>
                                                 </Typography>
-
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <ButtonGroup
+                                                    orientation="vertical"
+                                                    aria-label="vertical contained button group"
+                                                    variant="contained"
+                                                >
+                                                    <Button
+                                                        variant="contained"
+                                                        color="success"
+                                                        disableElevation
+                                                        startIcon={<ThumbUp />}
+                                                        onClick={() => handleVote(1, proposal.id)}
+                                                    >
+                                                        Yes
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="warning"
+                                                        disableElevation
+                                                        startIcon={<ThumbsUpDown />}
+                                                        onClick={() => handleVote(2, proposal.id)}
+                                                    >
+                                                        Abstain
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="error"
+                                                        disableElevation
+                                                        startIcon={<ThumbDownOutlined />}
+                                                        onClick={() => handleVote(3, proposal.id)}
+                                                    >
+                                                        No
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="error"
+                                                        disableElevation
+                                                        startIcon={<ThumbDown />}
+                                                        onClick={() => handleVote(4, proposal.id)}
+                                                    >
+                                                        No with veto
+                                                    </Button>
+                                                </ButtonGroup>
                                             </Grid>
                                         </Grid>
                                     </AccordionDetails>
@@ -162,7 +227,7 @@ const Gov = () => {
                                         sx={{ borderBottom: '1px solid rgba(0,0,0,.2)' }}
                                     >
                                         <Stack direction="row">
-                                            <Chip size="small" label={formatDate(proposal.deposit_end_time)} color="error" />
+                                            <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
                                             <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="success" />
                                         </Stack>
                                         <Typography sx={{ ml: 2 }}>{proposal.content.value.title}</Typography>
@@ -171,6 +236,8 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
+                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0].amount / 1000000}
+                                                    <br />
                                                     <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
                                             </Grid>
@@ -218,7 +285,7 @@ const Gov = () => {
                                         sx={{ borderBottom: '1px solid rgba(0,0,0,.2)' }}
                                     >
                                         <Stack direction="row">
-                                            <Chip size="small" label={formatDate(proposal.deposit_end_time)} color="error" />
+                                            <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
                                             <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="error" />
                                         </Stack>
                                         <Typography sx={{ ml: 2 }}>{proposal.content.value.title}</Typography>
@@ -227,6 +294,8 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
+                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0].amount / 1000000}
+                                                    <br />
                                                     <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
                                             </Grid>
