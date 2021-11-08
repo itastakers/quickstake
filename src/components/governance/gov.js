@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../context/store";
 import axios from "axios";
 import { Typography, Accordion, AccordionDetails, AccordionSummary, Stack, Chip, Grid, Alert, Paper, Pagination, Button, ButtonGroup } from "@mui/material";
-import { ExpandMore, ThumbUp, ThumbDown, ThumbsUpDown, ThumbDownAltOutlined, ThumbDownOutlined } from "@mui/icons-material";
+import { ExpandMore, ThumbUp, ThumbDown, ThumbsUpDown, ThumbDownOutlined } from "@mui/icons-material";
 import Chart from "./chart";
 import { vote } from "../../utils/cosmos";
 
@@ -102,7 +102,7 @@ const Gov = () => {
                             default:
                                 failedProposals.push(entry);
                         }
-
+                        return true;
                     })
                     setProposalsFailed(failedProposals);
                     setProposalsOngoing(ongoingProposals);
@@ -128,7 +128,7 @@ const Gov = () => {
                     <>
                         {paginateObjects(proposalsOngoing, proposalsOngoingPagination).map(proposal => (
                             <>
-                                <Accordion elevation={0} disableGutters square>
+                                <Accordion key={proposal.id} elevation={0} disableGutters square>
                                     <AccordionSummary
                                         expandIcon={<ExpandMore />}
                                         aria-controls="panel1a-content"
@@ -222,7 +222,7 @@ const Gov = () => {
                     <>
                         {paginateObjects(proposalsPassed, proposalsPassedPagination).map(proposal => (
                             <>
-                                <Accordion elevation={0} disableGutters square>
+                                <Accordion key={proposal.id} elevation={0} disableGutters square>
                                     <AccordionSummary
                                         expandIcon={<ExpandMore />}
                                         aria-controls="panel1a-content"
@@ -280,7 +280,7 @@ const Gov = () => {
                     <>
                         {paginateObjects(proposalsFailed, proposalsFailedPagination).map(proposal => (
                             <>
-                                <Accordion elevation={0} disableGutters square>
+                                <Accordion key={proposal.id} elevation={0} disableGutters square>
                                     <AccordionSummary
                                         expandIcon={<ExpandMore />}
                                         aria-controls="panel1a-content"

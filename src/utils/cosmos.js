@@ -1,8 +1,6 @@
 import { coin } from "@cosmjs/proto-signing";
 import { setupStakingExtension, QueryClient, setupDistributionExtension, setupGovExtension } from "@cosmjs/stargate"
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { ProposalStatus, TextProposal, VoteOption } from "cosmjs-types/cosmos/gov/v1beta1/gov";
-
 
 /**
  * Make query client
@@ -21,6 +19,8 @@ async function makeClient(rpcUrl, extension) {
       return QueryClient.withExtensions(tmClient, setupDistributionExtension);
     case 'gov':
       return QueryClient.withExtensions(tmClient, setupGovExtension)
+    default:
+      return QueryClient(tmClient);
   }
 }
 
@@ -190,7 +190,7 @@ export const withdrawAllRewards = async (chain, client, delegator, validators) =
       }
     }
 
-    msgs.push(withdrawMessage);
+    return msgs.push(withdrawMessage);
   });
 
   return client?.signAndBroadcast(

@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../components/layout";
-import { Grid, Typography, Box, Tabs, Tab } from "@mui/material";
+import { Grid, Box, Tabs, Tab } from "@mui/material";
 import NetworkSelect from "../components/network-select";
 import ValidatorList from "../components/validator-list";
 import Gov from "../components/governance/gov";
@@ -20,7 +20,7 @@ const TabPanel = (props) => {
     >
       {value === index && (
         <Box sx={{ p: 0 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -41,15 +41,7 @@ const a11yProps = (index) => {
 }
 
 const IndexPage = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
   const [value, setValue] = React.useState(0);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
