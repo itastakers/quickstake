@@ -1,21 +1,10 @@
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
+import {Modal, Alert, Typography, Box, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { GlobalContext } from "../context/store";
+import { GlobalContext } from "../../context/store";
 import axios from "axios";
-import chains from "../data/chains.json";
-import { getAllUnbondingDelegations } from "../utils/cosmos";
+import chains from "../../data/chains.json";
+import { getAllUnbondingDelegations } from "../../utils/cosmos";
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
@@ -156,24 +145,28 @@ const UnbondingModal = ({ open, handleClose }) => {
                 >
                     All unbonding assets
                 </Typography>
-                <TableContainer component={Paper}>
-                    <Table aria-label="collapsible table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell />
-                                <TableCell>Validator</TableCell>
-                                <TableCell>Adress</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        {totalUnbonding.length > 0 &&
-                            <TableBody>
-                                {totalUnbonding.map((row) => (
-                                    <Row key={row.name} row={row} />
-                                ))}
-                            </TableBody>
-                        }
-                    </Table>
-                </TableContainer>
+                {state.address ?
+                    <TableContainer component={Paper}>
+                        <Table aria-label="collapsible table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell />
+                                    <TableCell>Validator</TableCell>
+                                    <TableCell>Adress</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            {totalUnbonding.length > 0 &&
+                                <TableBody>
+                                    {totalUnbonding.map((row) => (
+                                        <Row key={row.name} row={row} />
+                                    ))}
+                                </TableBody>
+                            }
+                        </Table>
+                    </TableContainer>
+                    :
+                    <Alert severity="error">Please connect your wallet!</Alert>
+                }
             </Box>
         </Modal>
     );

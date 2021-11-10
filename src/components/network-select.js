@@ -9,7 +9,7 @@ import AdddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Grid from "@mui/material/Grid";
 import { GlobalContext } from "../context/store";
-import NewChainModal from "./new-chain-modal";
+import NewChainModal from "./modals/new-chain-modal";
 
 import chains from "../data/chains.json";
 import groups from "../data/chain_groups.json";
@@ -58,7 +58,7 @@ const NetworkSelect = () => {
           setChainModalOpen(false);
         }}
       />
-      <Grid container spacing={2} sx={{ pt: 4, pb: 2 }}>
+      <Grid container spacing={2}>
         <Grid item lg={2}>
           <Stack direction="row" spacing={2}>
             <FormControl fullWidth size="small">
@@ -98,6 +98,7 @@ const NetworkSelect = () => {
         </Grid>
         <Grid item lg={5}>
           <Button
+            disableElevation
             onClick={() =>
               openChainModal()
             }

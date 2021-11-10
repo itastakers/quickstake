@@ -20,7 +20,6 @@ const ValidatorList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalUndelegateOpen, setModalUndelegateOpen] = useState(false);
   const [validator, setValidator] = useState({});
-  const [allDelegations, setAllDelegations] = useState([]);
 
   const openModal = (validator) => {
     setValidator(validator);
@@ -58,7 +57,7 @@ const ValidatorList = () => {
               action: {
                 address: validator.operator_address,
                 name: validator.description.moniker,
-                delegated: delegationResponses.length > 0 ? !!delegationResponses.find((el) => el.delegation.validatorAddress == validator.operator_address) : false,
+                delegated: delegationResponses.length > 0 ? !!delegationResponses.find((el) => el.delegation.validatorAddress === validator.operator_address) : false,
               },
             };
           });
@@ -66,7 +65,6 @@ const ValidatorList = () => {
         }
         if (state.address) {
           getAllDelegations(state.address, chain.rpc).then((result => {
-            setAllDelegations(result.delegationResponses);
             createNewRows(result.delegationResponses);
           })).catch(() => createNewRows([]))
         } else {
