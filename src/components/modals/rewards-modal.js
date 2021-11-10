@@ -35,12 +35,11 @@ const RewardsModal = ({ open, handleClose }) => {
                         const arr = [];
                         result.rewards.map((entry) => {
                             let sum = 0;
-
-                            entry.reward.map(el => sum += parseInt(el.amount))
+                            entry.reward.map(re => sum+=re.amount)
                             const newEntry = {
                                 name: (validators.find(el => el.operator_address === entry.validatorAddress)).description.moniker,
                                 address: entry.validatorAddress,
-                                amount: 0
+                                amount: (sum / 1000000000000000000 / 1000000).toFixed(6) + " " + chain.coinDenom
                             }
                             return arr.push(newEntry);
                         })
