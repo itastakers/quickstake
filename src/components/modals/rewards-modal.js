@@ -4,6 +4,7 @@ import { GlobalContext } from "../../context/store";
 import { withdrawReward, getAllRewards, withdrawAllRewards } from "../../utils/cosmos";
 import chains from "../../data/chains.json";
 import axios from "axios";
+import { Decimal } from "@cosmjs/math";
 
 const style = {
     position: "absolute",
@@ -39,7 +40,7 @@ const RewardsModal = ({ open, handleClose }) => {
                             const newEntry = {
                                 name: (validators.find(el => el.operator_address === entry.validatorAddress)).description.moniker,
                                 address: entry.validatorAddress,
-                                amount: (sum / 1000000000000000000 / 1000000).toFixed(6) + " " + chain.coinDenom
+                                amount: Decimal.fromAtomics(sum, 24).toFloatApproximation().toFixed(6) + " " + chain.coinDenom
                             }
                             return arr.push(newEntry);
                         })
