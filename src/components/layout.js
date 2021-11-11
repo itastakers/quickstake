@@ -2,6 +2,7 @@ import React from "react";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import Container from "@mui/material/Container";
 import Header from "./header";
+import Footer from "./footer";
 import Store from "../context/store";
 
 const Layout = ({ children }) => {
@@ -13,6 +14,7 @@ const Layout = ({ children }) => {
         <Header />
 
         {children}
+        <Footer />
       </Container>
     </Store>
   );
