@@ -6,7 +6,7 @@ import { StaticImage } from "gatsby-plugin-image";
 const Footer = () => {
     return (
         <Grid container sx={{ mt: 4 }}>
-            <Grid item xs={4}>
+            <Grid item xs={4} alignSelf="center">
                 <StaticImage src="../images/logo-dark-itastakers.png" alt="Logo" />
             </Grid>
             <Grid item xs={2} />
