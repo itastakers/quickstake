@@ -1,21 +1,28 @@
 name: Deploy to Skyneton:
   pull_request:
   push:
-    branches: [main]jobs:
-  build:
-  runs-on: ubuntu-lateststeps:
-  — uses: actions/checkout@v2
-  — name: Use Node.js
-    uses: actions/setup-node@v1
-    with:
-      node-version: 14.x  - name: Install dependencies
-    run: npm install  - name: Run unit tests
-    run: npm test  - name: Build
-    run: npm run build
- 
-  — name: Deploy to Skynet
-    uses: kwypchlo/deploy-to-skynet-action@main
-    with:
-      upload-dir: build
-      github-token: ${{ secrets.GITHUB_TOKEN }}
-      registry-seed: ${{ github.event_name == ‘push’ && github.ref == ‘refs/heads/main’ && secrets.REGISTRY_SEED || ‘’ }}
+    branches: [main]
+    jobs:
+      build:
+      runs-on: ubuntu-latest
+      
+    steps:
+      — uses: actions/checkout@v2
+      — name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x  
+          
+      - name: Install dependencies
+        run: npm install  
+      - name: Run unit tests
+        run: npm test  
+      - name: Build
+        run: npm run build
+
+      — name: Deploy to Skynet
+        uses: kwypchlo/deploy-to-skynet-action@main
+        with:
+          upload-dir: build
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          registry-seed: ${{ github.event_name == ‘push’ && github.ref == ‘refs/heads/main’ && secrets.REGISTRY_SEED || ‘’ }}
