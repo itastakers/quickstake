@@ -182,8 +182,8 @@ const ValidatorList = () => {
         rows={rows}
         rowHeight={80}
         columns={columns}
-        pageSize={100}
-        rowsPerPageOptions={[100]}
+        pageSize={50}
+        rowsPerPageOptions={[50]}
         disableSelectionOnClick
         autoHeight
       />
