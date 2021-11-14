@@ -36,7 +36,7 @@ const RewardsModal = ({ open, handleClose }) => {
                         const arr = [];
                         result.rewards.map((entry) => {
                             let sum = 0;
-                            entry.reward.map(re => sum+=re.amount)
+                            entry.reward.map(re => sum += re.amount)
                             const newEntry = {
                                 name: (validators.find(el => el.operator_address === entry.validatorAddress)).description.moniker,
                                 address: entry.validatorAddress,
@@ -51,13 +51,68 @@ const RewardsModal = ({ open, handleClose }) => {
     }, [open]);
 
     const handleWithdraw = (validator) => {
-        withdrawReward(state.chain, state.signingClient, state.address, validator).then((res) => console.log(res)).catch((e) => console.log(e))
+        try {
+            const res = await withdrawReward(state.chain, state.signingClient, state.address, validator);
+            if (!res || res.code !== 0) {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `There was an error processing your tx. ${res.rawLog}`,
+                        severity: "error",
+                    },
+                });
+            } else {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `Transaction successfully broadcasted! Hash: ${res.transactionHash}`,
+                        severity: "success",
+                    },
+                });
+            }
+        } catch (error) {
+            dispatch({
+                type: "SET_MESSAGE",
+                payload: {
+                    message: `${error}`,
+                    severity: "error",
+                },
+            });
+        }
     }
 
     const handleWithdrawAllRewards = () => {
         const validators = [];
         rewards.map(el => validators.push(el.address));
-        withdrawAllRewards(state.chain, state.signingClient, state.address, validators).then((res) => console.log(res)).catch((e) => console.log(e))
+        
+        try {
+            const res = await withdrawAllRewards(state.chain, state.signingClient, state.address, validators);
+            if (!res || res.code !== 0) {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `There was an error processing your tx. ${res.rawLog}`,
+                        severity: "error",
+                    },
+                });
+            } else {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `Transaction successfully broadcasted! Hash: ${res.transactionHash}`,
+                        severity: "success",
+                    },
+                });
+            }
+        } catch (error) {
+            dispatch({
+                type: "SET_MESSAGE",
+                payload: {
+                    message: `${error}`,
+                    severity: "error",
+                },
+            });
+        }
     }
 
     return (
