@@ -53,51 +53,49 @@ const RedelegateModal = ({ open, handleClose }) => {
 
     const handleRedelegate = async () => {
         let redelegationAmount = parseFloat(value) * 1000000;
-    
+
         setLoading(true);
-    
+
         try {
-          const res = await redelegate(
-            state.chain,
-            state.signingClient,
-            state.address,
-            chosenValidator.address,
-            chosenValidatorTo.operator_address,
-            redelegationAmount
-          );
-    
-          if (!res || res.code !== 0) {
-            dispatch({
-              type: "SET_MESSAGE",
-              payload: {
-                message: `There was an error processing your tx. ${res.rawLog}`,
-                severity: "error",
-              },
-            });
-          } else {
-            dispatch({
-              type: "SET_MESSAGE",
-              payload: {
-                message: `Transaction successfully broadcasted! Hash: ${res.transactionHash}`,
-                severity: "success",
-              },
-            });
-          }
+            const res = await redelegate(
+                state.chain,
+                state.signingClient,
+                state.address,
+                chosenValidator.address,
+                chosenValidatorTo.operator_address,
+                redelegationAmount
+            );
+
+            if (!res || res.code !== 0) {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `There was an error processing your tx. ${res.rawLog}`,
+                        severity: "error",
+                    },
+                });
+            } else {
+                dispatch({
+                    type: "SET_MESSAGE",
+                    payload: {
+                        message: `Transaction successfully broadcasted! Hash: ${res.transactionHash}`,
+                        severity: "success",
+                    },
+                });
+            }
         } catch (error) {
-          dispatch({
-            type: "SET_MESSAGE",
-            payload: {
-              message: `${error}`,
-              severity: "error",
-            },
-          });
-    
-          console.log(error);
+            dispatch({
+                type: "SET_MESSAGE",
+                payload: {
+                    message: `${error}`,
+                    severity: "error",
+                },
+            });
         }
-    
+
         setLoading(false);
         handleClose();
-      };
+    };
 
     useEffect(() => {
         setChosenValidator(null)
