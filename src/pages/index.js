@@ -6,6 +6,7 @@ import ValidatorList from "../components/validator-list";
 import Gov from "../components/governance/gov";
 import MoreMenu from "../components/more-menu";
 import PropTypes from 'prop-types';
+import Message from "../components/message"
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -51,7 +52,7 @@ const IndexPage = () => {
 
   return (
     <Layout>
-      <Grid sx={{py: 4}} container>
+      <Grid sx={{ py: 4 }} container>
         <Grid alignSelf="center" item xs={6}>
           <NetworkSelect />
         </Grid>
@@ -60,6 +61,7 @@ const IndexPage = () => {
         </Grid>
       </Grid>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Message />
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Staking & Validators" {...a11yProps(0)} />
           <Tab label="Governance" {...a11yProps(1)} />
