@@ -1,4 +1,4 @@
-import { Alert, TableContainer, TableHead, TableRow, TableCell, Paper, Table, TableBody, Typography, Box, Modal, Button } from "@mui/material";
+import { Alert, LinearProgress, TableContainer, TableHead, TableRow, TableCell, Paper, Table, TableBody, Typography, Box, Modal, Button } from "@mui/material";
 import React, { useState, useContext, useEffect } from "react";
 import { GlobalContext } from "../../context/store";
 import { withdrawReward, getAllRewards, withdrawAllRewards } from "../../utils/cosmos";
@@ -20,8 +20,10 @@ const style = {
 
 
 const RewardsModal = ({ open, handleClose }) => {
-    const [state] = useContext(GlobalContext);
+    const [state, dispatch] = useContext(GlobalContext);
     const [rewards, setRewards] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const chain = chains.find(
         (chain) => chain.chain_id === state.selectedNetwork
     );
@@ -50,7 +52,8 @@ const RewardsModal = ({ open, handleClose }) => {
         }
     }, [open]);
 
-    const handleWithdraw = (validator) => {
+    const handleWithdraw = async (validator) => {
+        setLoading(true);
         try {
             const res = await withdrawReward(state.chain, state.signingClient, state.address, validator);
             if (!res || res.code !== 0) {
@@ -79,12 +82,15 @@ const RewardsModal = ({ open, handleClose }) => {
                 },
             });
         }
+        setLoading(false);
+        handleClose();
     }
 
-    const handleWithdrawAllRewards = () => {
+    const handleWithdrawAllRewards = async () => {
+        setLoading(true);
         const validators = [];
         rewards.map(el => validators.push(el.address));
-        
+
         try {
             const res = await withdrawAllRewards(state.chain, state.signingClient, state.address, validators);
             if (!res || res.code !== 0) {
@@ -113,6 +119,8 @@ const RewardsModal = ({ open, handleClose }) => {
                 },
             });
         }
+        setLoading(false);
+        handleClose();
     }
 
     return (
@@ -123,6 +131,10 @@ const RewardsModal = ({ open, handleClose }) => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
+                {loading &&
+                    <LinearProgress />
+                }
+
                 <Typography
                     id="modal-modal-title"
                     variant="h6"
@@ -136,6 +148,7 @@ const RewardsModal = ({ open, handleClose }) => {
                                 variant="contained"
                                 color="success"
                                 size="small"
+                                disabled={loading}
                                 style={{ marginLeft: 16 }}
                                 onClick={() => handleWithdrawAllRewards()}
                             >
@@ -175,6 +188,7 @@ const RewardsModal = ({ open, handleClose }) => {
                                                 variant="contained"
                                                 color="success"
                                                 size="small"
+                                                disabled={loading}
                                                 style={{ marginLeft: 16 }}
                                                 onClick={() => handleWithdraw(reward.address)}
                                             >
@@ -186,7 +200,7 @@ const RewardsModal = ({ open, handleClose }) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    : <Alert severity="error">Please connect your wallet!</Alert>
+                    : <Alert severity="error">No rewards found!</Alert>
 
                 }
             </Box>
