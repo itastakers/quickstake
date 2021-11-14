@@ -35,7 +35,7 @@ npm run develop
 ```
 
 **Production:**
-```
+```sh
 # Build
 npm run build
 ```
