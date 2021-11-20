@@ -10,7 +10,6 @@ import IconButton from "@mui/material/IconButton";
 import PublicIcon from "@mui/icons-material/Public";
 import DelegateModal from "./delegate-modal";
 import UndelegateModal from "./undelegate-modal";
-import { Alert } from "@mui/material";
 import { getAllDelegations } from "../../utils/cosmos";
 
 const ValidatorList = () => {
@@ -158,12 +157,6 @@ const ValidatorList = () => {
 
   return (
     <>
-      {state.message && (
-        <Alert sx={{ mb: 3 }} severity={state.message.severity}>
-          {state.message.text}
-        </Alert>
-      )}
-
       <DelegateModal
         open={modalOpen}
         validator={validator}
