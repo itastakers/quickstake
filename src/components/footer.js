@@ -6,64 +6,64 @@ import { StaticImage } from "gatsby-plugin-image";
 const Footer = () => {
     return (
         <Grid container sx={{ mt: 4 }}>
-            <Grid item xs={4} alignSelf="center">
+            <Grid item xs={12} md={4} alignSelf="center">
                 <StaticImage src="../images/logo-dark-itastakers.png" alt="Logo" />
             </Grid>
-            <Grid item xs={2} />
-            <Grid item xs={2}>
+            <Grid item xs={0} md={2} />
+            <Grid item xs={4} md={2}>
                 <Typography variant="h6">
                     <strong>Validators</strong>
                 </Typography>
                 <List dense>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://explorebitsong.com/staking/bitsongvaloper1fkj2cn209yeexxyets98evrcmmds23hck0lyzq">Bitsong</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://explorer.sentinel.co/validator/sentvaloper1z2qgaj3flw2r2gdn7yq22623p7adykwg8fw93z">Sentinel</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://www.mintscan.io/iris/validators/iva1d0cs3cv2mkzhu2xq2gskxcpfk3e7jyzzp8e8s4">Iris Network</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://morpheus.desmos.network/validators/desmosvaloper1u0dae8r8hay6r2gvccegg2fz6ryftf2wfnj5ft">Desmos</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://www.mintscan.io/persistence/validators/persistencevaloper1l6tn2xgtch3nv6a5aezfswd5uecww62uh3gwy4">Persistence</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">Juno</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                 </List>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={4} md={2}>
                 <Typography variant="h6">
                     <strong>Medium</strong>
                 </Typography>
                 <List dense>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://itastakers.com/blog/category/news">News</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://itastakers.com/blog/category/general">General</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://itastakers.com/blog/category/tutorials">Tutorials</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                 </List>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={4} md={2}>
                 <Typography variant="h6">
                     <strong>Github</strong>
                 </Typography>
                 <List dense>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://copernicus.itastakers.com/">Copernicus</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://sentinel-turing-4.itastakers.com/">Kepler IBC Sentinel</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                     <ListItem disablePadding>
-                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="https://cosmic.bet/">Cosmic</Link>
+                        <Link color="inherit" sx={{ lineHeight: 1.5 }} underline="hover" variant="body1" href="#">News</Link>
                     </ListItem>
                 </List>
             </Grid>
@@ -76,13 +76,13 @@ const Footer = () => {
                 </Typography>
             </Grid>
             <Grid item sx={{ pb: 3 }} display="flex" justifyContent="flex-end" xs={6}>
-                <Link href="https://twitter.com/itastakers" color="inherit" underline="none">
+                <Link href="#" color="inherit" underline="none">
                     <Twitter />
                 </Link>
-                <Link sx={{ pl: 3 }} href="https://github.com/itastakers" color="inherit" underline="none">
+                <Link sx={{ pl: 3 }} href="#" color="inherit" underline="none">
                     <GitHub />
                 </Link>
-                <Link sx={{ pl: 3 }} href="https://www.youtube.com/channel/UCaobj3KMp76sUSBVZqO4DTA" color="inherit" underline="none">
+                <Link sx={{ pl: 3 }} href="#" color="inherit" underline="none">
                     <YouTube />
                 </Link>
             </Grid>
