@@ -29,7 +29,7 @@ const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
   {
    field: "name",
    headerName: "Name",
-   flex: 1,
+   flex: 0.4,
    renderCell: (params) => (
     <Box>
      <Typography variant="h6">{params.value}</Typography>
@@ -39,18 +39,23 @@ const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
   {
    field: "contractAddress",
    headerName: "Contract Address",
-   flex: 0.3,
+   flex: 1,
   },
   {
    field: "denom",
    headerName: "Denom",
-   flex: 0.3,
+   flex: 0.2,
+  },
+  {
+   field: "balance",
+   headerName: "Balance",
+   flex: 0.2,
   },
   {
    field: "action",
    type: "actions",
    headerName: "Action",
-   flex: 0.3,
+   flex: 0.4,
    renderCell: (params) => {
     return (
      <>

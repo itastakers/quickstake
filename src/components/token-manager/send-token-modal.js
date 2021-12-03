@@ -8,7 +8,9 @@ import {
  LinearProgress,
  TextField,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { GlobalContext } from "../../context/store";
+import { getCustomTokenBalance } from "../../utils/cosmos";
 
 const style = {
  position: "absolute",
@@ -26,12 +28,33 @@ const initialState = {
  amount: "",
 };
 
-const SendTokenModal = ({ open, token, handleClose }) => {
+const SendTokenModal = ({ open, isLoading, token, handleClose }) => {
+ const [state] = useContext(GlobalContext);
  const [error, setError] = useState(false);
-
+ const [loading, setLoading] = useState(false);
+ const [balance, setBalance] = useState(0);
  const [sendInfo, setSendInfo] = useState(initialState);
 
+ useEffect(() => {
+  setLoading(isLoading);
+ }, [isLoading]);
+
+ useEffect(() => {
+  console.log("token", token);
+  if (!token.contractAddress) return;
+  console.log("ciaone", state.address, state.chain.rpc, token.contractAddress);
+  getCustomTokenBalance(
+   state.address,
+   state.chain.rpc,
+   token.contractAddress
+  ).then((balance) => {
+   console.log(balance);
+   setBalance(balance);
+  });
+ }, [token.contractAddress]);
+
  const handleChange = (name) => (event) => {
+  console.log("handleChange", name, event.target.value);
   setSendInfo({ ...sendInfo, [name]: event.target.value });
  };
 
@@ -48,10 +71,9 @@ const SendTokenModal = ({ open, token, handleClose }) => {
    return;
   }
   setError(null);
-  setLoading(true);
+  //setLoading(true);
+  handleClose(sendInfo.address, sendInfo.amount);
  };
-
- const [loading, setLoading] = useState(false);
 
  return (
   <Modal
@@ -74,19 +96,28 @@ const SendTokenModal = ({ open, token, handleClose }) => {
       </Typography>
      </Grid>
 
-     <Grid item xs={12}>
+     <Grid item xs={12} display="flex" justifyContent="space-between">
       <Typography
        id="modal-modal-description"
        variant="subtitle1"
-       sx={{ mb: 2 }}
+       lineHeight="2.35"
       >
-       <b>Your Balance:</b> !!!
+       <b>Your Balance:</b> {balance} {token.denom}
       </Typography>
+      <Button
+       variant="outlined"
+       disabled={loading}
+       onClick={() => {
+        setSendInfo({ ...sendInfo, amount: balance });
+       }}
+      >
+       MAX
+      </Button>
      </Grid>
 
      <Grid item xs={12}>
       <TextField
-       label="Sender address"
+       label="Recipient address"
        fullWidth
        disabled={loading}
        value={sendInfo.address}

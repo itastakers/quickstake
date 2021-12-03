@@ -6,6 +6,7 @@ import TokenTracker from "./token-tracker";
 import AddTokenModal from "./add-token-modal";
 import SendTokenModal from "./send-token-modal";
 
+import { getCustomTokenBalance, sendCustomToken } from "../../utils/cosmos";
 
 /**
  * Simple promise wrapper for local storage
@@ -55,12 +56,13 @@ const TokenService = {
 };
 
 const TokenManager = () => {
- const [state] = useContext(GlobalContext);
+ const [state, dispatch] = useContext(GlobalContext);
  const [myTokens, setMyTokens] = useState([]);
 
  //MODAL
  const [addTokenModalOpen, setAddTokenModalOpen] = useState(false);
  const [sendTokenModalOpen, setSendTokenModalOpen] = useState(false);
+ const [sendTokenModalLoading, setSendTokenModalLoading] = useState(false);
  const [selectedTokenToSend, setSelectedTokenToSend] = useState({});
 
  const handleNewToken = (token) => {
@@ -81,10 +83,57 @@ const TokenManager = () => {
   setSendTokenModalOpen(true);
  };
 
+ const handleSendToken = (toAddress, amount) => {
+  setSendTokenModalLoading(true);
+  //setSendTokenModalOpen(false);
+  if (!toAddress || !amount) return;
+  console.log(toAddress, amount);
+  sendCustomToken(
+   state.chain,
+   selectedTokenToSend,
+   amount,
+   toAddress,
+   250000,
+   10
+  ).then(
+   (res) => {
+    console.log(res);
+    if (res.code === 5) {
+     //error
+     dispatch({
+      type: "SET_MESSAGE",
+      payload: {
+       message: res.rawLog,
+       severity: "error",
+      },
+     });
+     //  dispatch({
+     //   type: "SET_ERROR",
+     //   payload: res.rawLog,
+     //  });
+    }
+    setSendTokenModalLoading(false);
+    setSendTokenModalOpen(false);
+   },
+   (err) => {
+    console.error(err);
+    setSendTokenModalLoading(false);
+    setSendTokenModalOpen(false);
+   }
+  );
+ };
+
  const refreshMyTokens = () => {
-  TokenService.getTokens().then((allTokens) => {
+  TokenService.getTokens().then(async (allTokens) => {
    console.log(allTokens);
    if (allTokens) {
+    for (const t of allTokens) {
+     t.balance = await getCustomTokenBalance(
+      state.address,
+      state.chain.rpc,
+      t.contractAddress
+     );
+    }
     setMyTokens(allTokens);
    }
   }, console.error);
@@ -102,15 +151,10 @@ const TokenManager = () => {
    ></AddTokenModal>
    <SendTokenModal
     open={sendTokenModalOpen}
-    handleClose={() => setSendTokenModalOpen(false)}
+    isLoading={sendTokenModalLoading}
+    handleClose={(toAddress, amount) => handleSendToken(toAddress, amount)}
     token={selectedTokenToSend}
    ></SendTokenModal>
-
-   {state.message && (
-    <Alert sx={{ mb: 3 }} severity={state.message.severity}>
-     {state.message.text}
-    </Alert>
-   )}
    <Box display="flex" justifyContent="flex-end">
     <Button
      variant="contained"
