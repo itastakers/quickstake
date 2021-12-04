@@ -23,9 +23,7 @@ const style = {
 
 const initialState = {
  id: "",
- name: "",
  contractAddress: "",
- denom: "",
 };
 
 const AddTokenModal = ({ open, handleClose }) => {
@@ -39,11 +37,7 @@ const AddTokenModal = ({ open, handleClose }) => {
  };
 
  const handleNewToken = () => {
-  if (
-   values.name === "" ||
-   values.contractAddress === "" ||
-   values.denom === ""
-  ) {
+  if (values.contractAddress === "") {
    setError({
     title: "Error: missed parameters",
    });
@@ -75,30 +69,11 @@ const AddTokenModal = ({ open, handleClose }) => {
        Add new token to track
       </Typography>
      </Grid>
-
-     <Grid item xs={6}>
-      <TextField
-       onChange={handleChange("name")}
-       value={values.name}
-       label="Token Name"
-       fullWidth
-       sx={{ mb: 2 }}
-      />
-     </Grid>
-     <Grid item xs={6}>
+     <Grid item xs={12}>
       <TextField
        onChange={handleChange("contractAddress")}
        label="Contract Address"
        value={values.contractAddress}
-       fullWidth
-       sx={{ mb: 2 }}
-      />
-     </Grid>
-     <Grid item xs={6}>
-      <TextField
-       onChange={handleChange("denom")}
-       value={values.denom}
-       label="Denom"
        fullWidth
        sx={{ mb: 2 }}
       />

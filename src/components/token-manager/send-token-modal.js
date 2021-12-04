@@ -32,34 +32,18 @@ const SendTokenModal = ({ open, isLoading, token, handleClose }) => {
  const [state] = useContext(GlobalContext);
  const [error, setError] = useState(false);
  const [loading, setLoading] = useState(false);
- const [balance, setBalance] = useState(0);
+ //  const [balance, setBalance] = useState(0);
  const [sendInfo, setSendInfo] = useState(initialState);
 
  useEffect(() => {
   setLoading(isLoading);
  }, [isLoading]);
 
- useEffect(() => {
-  console.log("token", token);
-  if (!token.contractAddress) return;
-  console.log("ciaone", state.address, state.chain.rpc, token.contractAddress);
-  getCustomTokenBalance(
-   state.address,
-   state.chain.rpc,
-   token.contractAddress
-  ).then((balance) => {
-   console.log(balance);
-   setBalance(balance);
-  });
- }, [token.contractAddress]);
-
  const handleChange = (name) => (event) => {
-  console.log("handleChange", name, event.target.value);
   setSendInfo({ ...sendInfo, [name]: event.target.value });
  };
 
  const handleSend = async () => {
-  console.log(sendInfo);
   if (
    sendInfo.address === "" ||
    sendInfo.amount === "" ||
@@ -92,7 +76,7 @@ const SendTokenModal = ({ open, isLoading, token, handleClose }) => {
        component="h2"
        sx={{ mb: 2 }}
       >
-       Send token: {token.name}
+       Send token: {token.tokenInfo?.name}
       </Typography>
      </Grid>
 
@@ -102,13 +86,13 @@ const SendTokenModal = ({ open, isLoading, token, handleClose }) => {
        variant="subtitle1"
        lineHeight="2.35"
       >
-       <b>Your Balance:</b> {balance} {token.denom}
+       <b>Your Balance:</b> {token.balance} {token.tokenInfo?.symbol}
       </Typography>
       <Button
        variant="outlined"
        disabled={loading}
        onClick={() => {
-        setSendInfo({ ...sendInfo, amount: balance });
+        setSendInfo({ ...sendInfo, amount: token.balance });
        }}
       >
        MAX

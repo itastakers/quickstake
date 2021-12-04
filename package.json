@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@cosmjs/stargate": "^0.26.0",
+    "@cosmjs/cosmwasm-stargate": "^0.26.5",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@ledgerhq/hw-app-cosmos": "^6.7.0",

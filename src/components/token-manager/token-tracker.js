@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { DataGrid, GridOverlay } from "@mui/x-data-grid";
 import { Typography, Box, Button } from "@mui/material";
 
-
 import DeleteTokenModal from "./delete-token-modal";
 
 const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
@@ -30,6 +29,9 @@ const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
    field: "name",
    headerName: "Name",
    flex: 0.4,
+   valueGetter: (params) => {
+    return params.row.tokenInfo.name;
+   },
    renderCell: (params) => (
     <Box>
      <Typography variant="h6">{params.value}</Typography>
@@ -42,9 +44,12 @@ const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
    flex: 1,
   },
   {
-   field: "denom",
+   field: "symbol",
    headerName: "Denom",
    flex: 0.2,
+   valueGetter: (params) => {
+    return params.row.tokenInfo.symbol;
+   },
   },
   {
    field: "balance",
@@ -100,8 +105,8 @@ const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
     rows={tokens}
     rowHeight={80}
     columns={columns}
-    pageSize={50}
-    rowsPerPageOptions={[50]}
+    pageSize={5}
+    rowsPerPageOptions={[5]}
     disableSelectionOnClick
     autoHeight
    />

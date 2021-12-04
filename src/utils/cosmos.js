@@ -2,14 +2,16 @@ import { coin } from "@cosmjs/proto-signing";
 
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+
 import {
+ calculateFee,
  setupStakingExtension,
  setupDistributionExtension,
  setupGovExtension,
  QueryClient,
  setupAuthExtension,
  setupBankExtension,
- SigningStargateClient,
 } from "@cosmjs/stargate";
 
 import { setupWasmExtension } from "./wasm";
@@ -284,37 +286,110 @@ export const vote = async (chain, client, voter, proposalId, option) => {
  * @param {*} client
  * @param {string} destinationAddress
  * @param {number} amount
- * @returns
+ * @returns {
+ *  status: boolean,
+ *  txHash: string,
+ *  logs: any,
+ *  url: string
+ * }
  */
 export const sendCustomToken = async (
- chain,
- customToken,
+ chainId,
+ chainRpc,
+ cw20ContractAddress,
+ cw20Decimals,
  amount,
  recipientAddress,
+ senderAddress,
  gas,
- gasAmount
+ gasAmount,
+ gasDenom
 ) => {
- const offlineSigner = window.getOfflineSignerOnlyAmino(chain.chain_id);
- const accounts = await offlineSigner
-  .getAccounts()
-  .catch((e) => console.log(e));
- // Init cosmjs client
- const client = await SigningStargateClient.connectWithSigner(
-  chain.rpc,
-  offlineSigner,
-  customToken.contractAddress
+ const offlineSigner = window.getOfflineSigner(chainId);
+
+ const accounts = await offlineSigner.getAccounts();
+
+ // Initialize the juno roc with the offline signer that is injected by Keplr extension.
+ const cosmJS = await SigningCosmWasmClient.connectWithSigner(
+  chainRpc,
+  offlineSigner
  );
 
- console.log(offlineSigner, accounts, client, amount);
+ amount = parseFloat(amount);
+ if (isNaN(amount)) {
+  console.log("Invalid amount");
+  return {
+   status: false,
+   logs: [],
+  };
+ }
 
- amount = Number(amount);
+ amount *= Math.pow(10, cw20Decimals);
+ amount = Math.floor(amount);
 
-  return await client?.sendTokens(
-   accounts[0].address,
-   recipientAddress,
-   [coin(amount, customToken.denom)],
-   { gas, amount: [{ denom: customToken.denom, amount: gasAmount }] }
+ const executMsg = {
+  transfer: { recipient: recipientAddress, amount: amount.toString() },
+ };
+ try {
+  const fee = calculateFee(gas, `${gasAmount}${gasDenom}`);
+  const result = await cosmJS.execute(
+   senderAddress,
+   cw20ContractAddress,
+   executMsg,
+   fee
   );
+
+  if (result.code !== undefined && result.code !== 0) {
+   console.log("Failed to send tx: " + result.logs);
+   return {
+    status: false,
+    logs: result.logs,
+   };
+  } else {
+   return {
+    status: true,
+    logs: result.logs,
+    txHash: result.transactionHash,
+    url: `https://blueprints.juno.giansalex.dev/#/transactions/${result.transactionHash}`,
+   };
+   //  const txhash = result.transactionHash;
+   //  const txtlink = document.getElementById("txt");
+   //  txtlink.textContent = txhash;
+   //  txtlink.setAttribute(
+   //   "href",
+   //   "https://blueprints.juno.giansalex.dev/#/transactions/" + txhash
+   //  );
+
+   //  await updateBalance(accounts[0].address, cosmJS);
+  }
+ } catch (error) {
+  console.log(error);
+  console.log("Tx Failed");
+  return {
+   status: false,
+   logs: [],
+  };
+ }
+};
+
+// Querying current WYND Balance for address
+export const getCustomTokenInfo = async (rpcUrl, tokenContractAddress) => {
+ const client = await makeWasmClient(rpcUrl);
+
+ console.log(`Getting custom token info for ${tokenContractAddress}`);
+
+ try {
+  const res = await client.wasm.queryContractSmart(tokenContractAddress, {
+   token_info: {},
+  });
+
+  console.log(`Token info: `, res);
+
+  return res;
+ } catch (e) {
+  console.log(e);
+  return 0;
+ }
 };
 
 // Querying current WYND Balance for address
@@ -324,9 +399,6 @@ export const getCustomTokenBalance = async (
  tokenContractAddress
 ) => {
  const client = await makeWasmClient(rpcUrl);
-
- console.log(`Getting balance for ${address}`, client);
- //const client = await CosmWasmClient.connect(rpcUrl);
 
  try {
   const res = await client.wasm.queryContractSmart(tokenContractAddress, {
@@ -343,7 +415,6 @@ export const getCustomTokenBalance = async (
 };
 
 async function makeWasmClient(endpoint) {
- // : Promise<QueryClient & AuthExtension & BankExtension & WasmExtension>
  const tmClient = await Tendermint34Client.connect(endpoint);
  return QueryClient.withExtensions(
   tmClient,

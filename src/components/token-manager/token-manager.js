@@ -3,10 +3,15 @@ import { GlobalContext } from "../../context/store";
 import { Typography, Box, Alert, Paper, Button } from "@mui/material";
 
 import TokenTracker from "./token-tracker";
+import TxsTracker from "./txs-tracker";
 import AddTokenModal from "./add-token-modal";
 import SendTokenModal from "./send-token-modal";
 
-import { getCustomTokenBalance, sendCustomToken } from "../../utils/cosmos";
+import {
+ getCustomTokenBalance,
+ getCustomTokenInfo,
+ sendCustomToken,
+} from "../../utils/cosmos";
 
 /**
  * Simple promise wrapper for local storage
@@ -55,9 +60,57 @@ const TokenService = {
   }),
 };
 
+/**
+ * Simple promise wrapper for local storage
+ */
+const TxService = {
+ getTxs: () =>
+  new Promise((resolve, reject) => {
+   try {
+    const allTxs = localStorage.getItem("myTxs");
+    if (allTxs) {
+     resolve(JSON.parse(allTxs));
+    }
+    resolve([]);
+   } catch (e) {
+    reject(e);
+   }
+  }),
+ addTx: (tx) =>
+  new Promise((resolve, reject) => {
+   try {
+    const allTxs = localStorage.getItem("myTxs");
+    if (allTxs) {
+     const all = JSON.parse(allTxs);
+     localStorage.setItem("myTxs", JSON.stringify([tx, ...all]));
+    } else {
+     localStorage.setItem("myTxs", JSON.stringify([tx]));
+    }
+    resolve();
+   } catch (e) {
+    reject(e);
+   }
+  }),
+ deleteTx: (tx) =>
+  new Promise((resolve, reject) => {
+   try {
+    const allTxs = localStorage.getItem("myTxs");
+    if (allTxs) {
+     const all = JSON.parse(allTxs);
+     const filtered = all.filter((t) => t.id !== tx.id);
+     localStorage.setItem("myTxs", JSON.stringify(filtered));
+    }
+    resolve();
+   } catch (e) {
+    reject(e);
+   }
+  }),
+};
+
 const TokenManager = () => {
  const [state, dispatch] = useContext(GlobalContext);
  const [myTokens, setMyTokens] = useState([]);
+ const [myTxs, setMyTxs] = useState([]);
 
  //MODAL
  const [addTokenModalOpen, setAddTokenModalOpen] = useState(false);
@@ -65,7 +118,14 @@ const TokenManager = () => {
  const [sendTokenModalLoading, setSendTokenModalLoading] = useState(false);
  const [selectedTokenToSend, setSelectedTokenToSend] = useState({});
 
- const handleNewToken = (token) => {
+ useEffect(() => {
+  //This use effect refresh custom tokens balance
+  //when network change
+  console.log("TokenManager useEffect changed address");
+  refreshMyTokens();
+ }, [state.address]);
+
+ const handleNewToken = async (token) => {
   setAddTokenModalOpen(false);
   if (!token) return;
   console.log(token);
@@ -84,43 +144,73 @@ const TokenManager = () => {
  };
 
  const handleSendToken = (toAddress, amount) => {
+  if (!toAddress || !amount) {
+   setSendTokenModalOpen(false);
+   return;
+  }
+  if (amount.includes("backdrop")) {
+   setSendTokenModalOpen(false);
+   return;
+  }
   setSendTokenModalLoading(true);
-  //setSendTokenModalOpen(false);
-  if (!toAddress || !amount) return;
   console.log(toAddress, amount);
   sendCustomToken(
-   state.chain,
-   selectedTokenToSend,
+   state.chain.chain_id,
+   state.chain.rpc,
+   selectedTokenToSend.contractAddress,
+   selectedTokenToSend.tokenInfo.decimals,
    amount,
    toAddress,
+   state.address,
    250000,
-   10
-  ).then(
-   (res) => {
-    console.log(res);
-    if (res.code === 5) {
-     //error
-     dispatch({
-      type: "SET_MESSAGE",
-      payload: {
-       message: res.rawLog,
-       severity: "error",
-      },
-     });
-     //  dispatch({
-     //   type: "SET_ERROR",
-     //   payload: res.rawLog,
-     //  });
+   0.1,
+   state.chain.coinMinimalDenom
+  )
+   .then(
+    (res) => {
+     if (!res) {
+      console.error("no response");
+      dispatch({
+       type: "SET_MESSAGE",
+       payload: {
+        message: "Error sending token",
+        severity: "error",
+       },
+      });
+      return;
+     }
+     console.log(res);
+     if (!res.status) {
+      //error
+      dispatch({
+       type: "SET_MESSAGE",
+       payload: {
+        message: "Error sending token",
+        severity: "error",
+       },
+      });
+     }
+     refreshMyTokens();
+     const newTx = {
+      id: res.txHash,
+      type: "send",
+      from: state.address,
+      to: toAddress,
+      amount: amount,
+      token: selectedTokenToSend.tokenInfo.name,
+      url: res.url,
+     };
+     console.log(newTx);
+     TxService.addTx(newTx).then(refreshMyTxs, console.error);
+    },
+    (err) => {
+     console.error(err);
     }
+   )
+   .finally(() => {
     setSendTokenModalLoading(false);
     setSendTokenModalOpen(false);
-   },
-   (err) => {
-    console.error(err);
-    setSendTokenModalLoading(false);
-    setSendTokenModalOpen(false);
-   }
-  );
+   });
  };
 
  const refreshMyTokens = () => {
@@ -128,20 +218,25 @@ const TokenManager = () => {
    console.log(allTokens);
    if (allTokens) {
     for (const t of allTokens) {
-     t.balance = await getCustomTokenBalance(
-      state.address,
-      state.chain.rpc,
-      t.contractAddress
-     );
+     t.tokenInfo = await getCustomTokenInfo(state.chain.rpc, t.contractAddress);
+     t.balance =
+      (await getCustomTokenBalance(
+       state.address,
+       state.chain.rpc,
+       t.contractAddress
+      )) / Math.pow(10, t.tokenInfo.decimals);
     }
     setMyTokens(allTokens);
    }
   }, console.error);
  };
 
- useEffect(() => {
-  refreshMyTokens();
- }, []);
+ const refreshMyTxs = () => {
+  TxService.getTxs().then(async (allTxs) => {
+   console.log(allTxs);
+   setMyTxs(allTxs);
+  }, console.error);
+ };
 
  return (
   <>
@@ -178,6 +273,17 @@ const TokenManager = () => {
      onDeleteToken={(token) => deleteToken(token)}
      onSendToken={(token) => sendToken(token)}
     ></TokenTracker>
+   </Paper>
+
+   <Paper sx={{ mt: 2 }} elevation={0} variant="outlined">
+    <Typography
+     sx={{ pl: 3, py: 2, borderBottom: "solid rgba(0,0,0,.2) 1px" }}
+     variant="h5"
+    >
+     Your Transactions
+    </Typography>
+
+    <TxsTracker txs={myTxs}></TxsTracker>
    </Paper>
   </>
  );
