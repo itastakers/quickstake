@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../context/store";
-import { Typography, Box, Alert, Paper, Button } from "@mui/material";
+import { Typography, Box, Paper, Button } from "@mui/material";
 
 import TokenTracker from "./token-tracker";
 import TxsTracker from "./txs-tracker";
@@ -122,7 +122,11 @@ const TokenManager = () => {
   //This use effect refresh custom tokens balance
   //when network change
   console.log("TokenManager useEffect changed address");
+  setSendTokenModalOpen(false);
+  setAddTokenModalOpen(false);
+  setSelectedTokenToSend({});
   refreshMyTokens();
+  refreshMyTxs();
  }, [state.address]);
 
  const handleNewToken = async (token) => {
@@ -205,6 +209,14 @@ const TokenManager = () => {
     },
     (err) => {
      console.error(err);
+     //error
+     dispatch({
+      type: "SET_MESSAGE",
+      payload: {
+       message: "Error sending token",
+       severity: "error",
+      },
+     });
     }
    )
    .finally(() => {

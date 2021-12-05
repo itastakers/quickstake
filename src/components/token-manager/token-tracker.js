@@ -114,7 +114,6 @@ const TokenTracker = ({ tokens, onDeleteToken, onSendToken }) => {
  );
 };
 
-// const NoRows = () => <Typography variant="h6">No Tokens</Typography>;
 const NoRows = () => (
  <GridOverlay>
   <Typography variant="h6">No Tokens</Typography>

@@ -8,7 +8,6 @@ import {
  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 const style = {
  position: "absolute",
@@ -43,7 +42,7 @@ const AddTokenModal = ({ open, handleClose }) => {
    });
   } else {
    setError(null);
-   values.id = uuidv4();
+   values.id = values.contractAddress;
    handleClose(values);
    setValues(initialState);
   }

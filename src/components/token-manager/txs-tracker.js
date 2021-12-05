@@ -2,7 +2,6 @@ import React from "react";
 import { DataGrid, GridOverlay } from "@mui/x-data-grid";
 import { Typography  } from "@mui/material";
 
-
 const TxsTracker = ({ txs }) => {
  const columns = [
   {
@@ -60,7 +59,6 @@ const TxsTracker = ({ txs }) => {
  );
 };
 
-// const NoRows = () => <Typography variant="h6">No Tokens</Typography>;
 const NoRows = () => (
  <GridOverlay>
   <Typography variant="h6">No Txs</Typography>

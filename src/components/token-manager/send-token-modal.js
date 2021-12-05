@@ -8,9 +8,7 @@ import {
  LinearProgress,
  TextField,
 } from "@mui/material";
-import React, { useEffect, useState, useContext } from "react";
-import { GlobalContext } from "../../context/store";
-import { getCustomTokenBalance } from "../../utils/cosmos";
+import React, { useEffect, useState } from "react";
 
 const style = {
  position: "absolute",
@@ -29,10 +27,8 @@ const initialState = {
 };
 
 const SendTokenModal = ({ open, isLoading, token, handleClose }) => {
- const [state] = useContext(GlobalContext);
  const [error, setError] = useState(false);
  const [loading, setLoading] = useState(false);
- //  const [balance, setBalance] = useState(0);
  const [sendInfo, setSendInfo] = useState(initialState);
 
  useEffect(() => {
@@ -55,7 +51,6 @@ const SendTokenModal = ({ open, isLoading, token, handleClose }) => {
    return;
   }
   setError(null);
-  //setLoading(true);
   handleClose(sendInfo.address, sendInfo.amount);
  };
 
