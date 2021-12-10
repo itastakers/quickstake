@@ -1,18 +1,5 @@
 [
  {
-  "name": "JunoTEST",
-  "chain_id": "uni",
-  "lcd": "https://lcd.uni.juno.deuslabs.fi",
-  "rpc": "https://rpc.uni.juno.deuslabs.fi",
-  "coinDenom": "JUNO",
-  "coinMinimalDenom": "ujunox",
-  "prefix": "juno",
-  "version": "stargate",
-  "decimals": 6,
-  "group": "testnet",
-  "cw20_support": true
- },
- {
   "name": "Juno",
   "chain_id": "juno-1",
   "lcd": "https://lcd-juno.itastakers.com",
@@ -103,5 +90,18 @@
   "decimals": 6,
   "group": "mainnet",
   "cw20_support": false
- }
+ },
+ {
+    "name": "Juno Uni",
+    "chain_id": "uni",
+    "lcd": "https://lcd.uni.juno.deuslabs.fi",
+    "rpc": "https://rpc.uni.juno.deuslabs.fi",
+    "coinDenom": "JUNO",
+    "coinMinimalDenom": "ujunox",
+    "prefix": "juno",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "testnet",
+    "cw20_support": true
+   }
 ]
