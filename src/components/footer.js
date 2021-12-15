@@ -7,7 +7,7 @@ const Footer = () => {
     return (
         <Grid container sx={{ mt: 4 }}>
             <Grid item xs={12} md={4} alignSelf="center">
-                <StaticImage src="../images/logo-dark-itastakers.png" alt="Logo" />
+                <StaticImage src="../images/logo_square.svg" alt="ITA Stakers Logo" />
             </Grid>
             <Grid item xs={0} md={2} />
             <Grid item xs={4} md={2}>
