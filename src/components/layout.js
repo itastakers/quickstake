@@ -10,6 +10,11 @@ const Layout = ({ children }) => {
     <Store>
       <GlobalStyles styles={{ body: { paddingTop: 50 } }} />
 
+      <Helmet defer={false}>
+        <title>QuickStake | Cosmos Staking</title>
+        <meta name="description" content="JUNO, ATOM, OSMO Staking interface. Stake any Cosmos Tokens in minutes" />
+      </Helmet>
+
       <Container>
         <Header />
 
