@@ -145,7 +145,7 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
-                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0].amount / 1000000}
+                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0] ? proposal.total_deposit[0].amount / 1000000 : 0}
                                                     <br />
                                                     <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
@@ -239,7 +239,7 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
-                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0].amount / 1000000}
+                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0] ? proposal.total_deposit[0].amount / 1000000 : 0}
                                                     <br />
                                                     <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
@@ -297,7 +297,7 @@ const Gov = () => {
                                         <Grid container>
                                             <Grid item xs={8}>
                                                 <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
-                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0].amount / 1000000}
+                                                    <strong>Deposited amount:</strong> {proposal.total_deposit[0] ? proposal.total_deposit[0].amount / 1000000 : 0}
                                                     <br />
                                                     <NewLineToBr>{proposal.content.value.description}</NewLineToBr>
                                                 </Typography>
