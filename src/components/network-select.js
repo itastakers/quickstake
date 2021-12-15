@@ -59,7 +59,7 @@ const NetworkSelect = () => {
         }}
       />
       <Grid container spacing={2}>
-        <Grid item lg={2}>
+        <Grid item lg={3}>
           <Stack direction="row" spacing={2}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">
