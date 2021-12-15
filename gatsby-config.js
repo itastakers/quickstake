@@ -6,9 +6,11 @@ module.exports = {
   plugins: [
     "gatsby-plugin-image",
     {
-      resolve: "gatsby-plugin-google-analytics",
+      resolve: "gatsby-plugin-google-tagmanager",
       options: {
-        trackingId: "PIPPO1",
+        id: "G-JDNZMBXMXC",
+        includeInDevelopment: false,
+        defaultDataLayer: { platform: "gatsby" },
       },
     },
     "gatsby-plugin-react-helmet",
