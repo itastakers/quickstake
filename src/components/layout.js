@@ -4,6 +4,7 @@ import Container from "@mui/material/Container";
 import Header from "./header";
 import Footer from "./footer";
 import Store from "../context/store";
+import { Helmet } from 'react-helmet'
 
 const Layout = ({ children }) => {
   return (
