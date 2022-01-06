@@ -59,7 +59,7 @@ export const suggestChain = async (chain) => {
       average: 0.01,
       high: 0.025,
     },
-    features: ["stargate", "ibc-transfer"],
+    features: chain.features ?? ["stargate", "ibc-transfer"],
   });
 };
 

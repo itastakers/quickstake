@@ -10,7 +10,8 @@
   "version": "stargate",
   "decimals": 6,
   "group": "mainnet",
-  "cw20_support": false
+  "cw20_support": false,
+  "features": ["stargate", "ibc-transfer", "cosmwasm"]
  },
  {
   "name": "Stargaze",
@@ -23,19 +24,6 @@
   "version": "stargate",
   "decimals": 6,
   "group": "mainnet",
-  "cw20_support": false
- },
- {
-  "name": "Juno Hera",
-  "chain_id": "hera",
-  "lcd": "https://lcd-juno-hera.itastakers.com",
-  "rpc": "https://rpc-juno-hera.itastakers.com",
-  "coinDenom": "JUNO",
-  "coinMinimalDenom": "ujuno",
-  "prefix": "juno",
-  "version": "stargate",
-  "decimals": 6,
-  "group": "testnet",
   "cw20_support": false
  },
  {
@@ -102,6 +90,20 @@
     "version": "stargate",
     "decimals": 6,
     "group": "testnet",
-    "cw20_support": true
-   }
+    "cw20_support": true,
+    "features": ["stargate", "ibc-transfer", "cosmwasm"]
+ },
+ {
+    "name": "Gravity Bridge",
+    "chain_id": "gravity-bridge-2",
+    "lcd": "https://lcd-gravity.itastakers.com",
+    "rpc": "https://rpc-gravity.itastakers.com",
+    "coinDenom": "GRAVITON",
+    "coinMinimalDenom": "ugraviton",
+    "prefix": "gravity",
+    "version": "stargate",
+    "decimals": 6,
+    "group": "testnet",
+    "cw20_support": false
+ }
 ]
