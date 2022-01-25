@@ -1,25 +1,11 @@
-import React, { useContext, useState } from "react";
-import Layout from "../components/layout";
-import { Grid } from "@mui/material";
-import NetworkSelect from "../components/network-select";
-import TabsPanel from "../components/index/tabs-panel";
-
-import MoreMenu from "../components/more-menu";
-
+import React, { useContext, useEffect, useState } from "react";
+import chains from '../data/chains.json';
+import { navigate } from 'gatsby'
 const IndexPage = () => {
- return (
-  <Layout>
-   <Grid sx={{ py: 4 }} container>
-    <Grid alignSelf="center" item xs={6}>
-     <NetworkSelect />
-    </Grid>
-    <Grid alignSelf="center" item xs={6}>
-     <MoreMenu />
-    </Grid>
-   </Grid>
-   <TabsPanel></TabsPanel>
-  </Layout>
- );
+    useEffect(()=>{
+        navigate(`/${chains[0].chain_id}/staking`)            
+    },[])
+    return <></>;
 };
 
 export default IndexPage;

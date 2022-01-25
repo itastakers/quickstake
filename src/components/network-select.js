@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Select from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
@@ -14,24 +14,32 @@ import NewChainModal from "./modals/new-chain-modal";
 import chains from "../data/chains.json";
 import groups from "../data/chain_groups.json";
 import ListSubheader from '@mui/material/ListSubheader';
-
+import { Link,navigate  } from "gatsby"
 import { connectKeplr } from "../utils/keplr";
 
-const NetworkSelect = () => {
+const NetworkSelect = ({chainId,type}) => {
   const [state, dispatch] = useContext(GlobalContext);
   const [chainModalOpen, setChainModalOpen] = useState(false);
-
+  let mergedChains = chains;
+  useEffect(()=>{
+    if(chainId){
+      const chain = mergedChains.find((c) => c.chain_id === chainId);
+      // reconnect keplr    
+      if(chain){
+        connectKeplr(chain, dispatch);
+        dispatch({ type: "SET_SELECTED_NETWORK", payload: chainId, chain: chain });
+      }
+    }
+  },[chainId])
   const openChainModal = () => {
     setChainModalOpen(true);
   }
-
   const deleteLocalChain = () => {
     let localChains = JSON.parse(localStorage.getItem('localChains'))
     localChains = localChains.filter((localChain) => localChain.chain_id !== selectedChain.chain_id)
     localStorage.setItem('localChains', JSON.stringify(localChains))
     dispatch({ type: "SET_SELECTED_NETWORK", payload: chains[0].chain_id, chain: chains[0] });
-  }
-  let mergedChains = chains;
+  }  
 
   if (typeof window !== 'undefined' && window) {
     mergedChains = localStorage.getItem('localChains') ? chains.concat(JSON.parse(localStorage.getItem('localChains'))) : chains;
@@ -43,7 +51,7 @@ const NetworkSelect = () => {
 
   const handleChange = (event) => {
     const chain = mergedChains.find((c) => c.chain_id === event.target.value);
-
+    navigate(`/${event.target.value}/${type}`)
     // reconnect keplr    
     connectKeplr(chain, dispatch);
 
