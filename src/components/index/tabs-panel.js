@@ -6,9 +6,9 @@ import Message from "../message";
 import ValidatorList from "../validator-list";
 import Gov from "../governance/gov";
 import TokenManager from "../token-manager/token-manager";
-
+import {navigate} from "gatsby";
 const TabPanel = (props) => {
- const { children, value, index, ...other } = props;
+ const { children, value, index ,type, ...other } = props;
 
  return (
   <div
@@ -36,13 +36,40 @@ const a11yProps = (index) => {
  };
 };
 
-const TabsPanel = () => {
+const TabsPanel = ({type}) => {
  const [state] = useContext(GlobalContext);
-
  const [value, setValue] = useState(0);
+ useEffect(()=>{
+    switch (type) {
+        case "staking":
+            setValue(0)
+            break;
+        case "governance":
+            setValue(1)
+          break;
+        case "cw20":
+            setValue(2)    
+          break;
+        default:
+            setValue(0)
+            navigate(`/${state.selectedNetwork}/staking`)
+      }
+    navigate(`/${state.selectedNetwork}/${type}`)
+ },[type])
 
  const handleChange = (event, newValue) => {
   setValue(newValue);
+  switch (newValue) {
+    case 0:
+        navigate(`/${state.selectedNetwork}/staking`)
+        break;
+    case 1:
+        navigate(`/${state.selectedNetwork}/governance`)
+      break;
+    case 2:
+        navigate(`/${state.selectedNetwork}/cw20`)
+      break;
+  }
  };
  useEffect(() => {
   if (!state.chain.cw20_support) {
