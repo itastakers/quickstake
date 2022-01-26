@@ -69,8 +69,8 @@
  {
   "name": "Osmosis",
   "chain_id": "osmosis-1",
-  "lcd": "https://lcd-osmosis.keplr.app",
-  "rpc": "https://rpc-osmosis.keplr.app",
+  "lcd": "https://lcd-osmosis.itastakers.com",
+  "rpc": "https://rpc-osmosis.itastakers.com",
   "coinDenom": "OSMO",
   "coinMinimalDenom": "uosmo",
   "prefix": "osmo",
