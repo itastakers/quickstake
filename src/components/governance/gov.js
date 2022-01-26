@@ -51,12 +51,10 @@ const Gov = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
   const formatDate = (data) => {
     const date = new Date(data);
     return date.toLocaleDateString("en-US");
   }
-
   const formatStatus = (status) => {
     switch (status) {
       case 1:
