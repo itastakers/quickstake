@@ -3,9 +3,6 @@ import { GlobalContext } from "../../context/store";
 import axios from "axios";
 import {
   Typography,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Stack,
   Chip,
   Grid,
@@ -20,10 +17,7 @@ import {
   TableContainer,
   TableRow,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   Box,
   Slide,
   AppBar,
@@ -34,6 +28,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ExpandMore, ThumbUp, ThumbDown, ThumbsUpDown, ThumbDownOutlined } from "@mui/icons-material";
 import Chart from "./chart";
 import { vote } from "../../utils/cosmos";
+import "../../style/index.scss";
+import Loading from "../loading/loading"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -48,6 +46,7 @@ const Gov = () => {
   const [currentProposal, setCurrentProposal] = useState(null);
   const [voteStatus, setVoteStatus] = useState("ongoing");
   const [ongoingVoteStatus, setOngoingVoteStatus] = useState(null);
+  const [loadingStatus, setLoadingStatus] = useState(false)
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -74,15 +73,15 @@ const Gov = () => {
   const voteFormatStatus = (status) => {
     switch (status) {
       case "VOTE_OPTION_YES":
-        return ['YES',"success"]
+        return ['YES', "success"]
       case "VOTE_OPTION_ABSTAIN":
-        return ['ABSTAIN','warning']
+        return ['ABSTAIN', 'warning']
       case "VOTE_OPTION_NO":
-        return ['NO','error']
+        return ['NO', 'error']
       case "VOTE_OPTION_NO_WITH_VETO":
-        return ['NO WITH VETO','error']
+        return ['NO WITH VETO', 'error']
       default:
-        return ['UNDEFINED','error']
+        return ['UNDEFINED', 'error']
     }
   }
 
@@ -112,13 +111,37 @@ const Gov = () => {
   }
 
   const handleVote = (option, proposalId) => {
+    setLoadingStatus(true)
     vote(state.chain, state.signingClient, state.address, proposalId, option)
       .then(res => {
+        console.log(res, "***********************")
         if (res) {
-          getProposalVoteStatus(state.address)
+          console.log("1111111111111111111111111")
+          setLoadingStatus(false)
+          toast.success('The transaction was succeeded', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          getProposalVoteStatus(state.address, proposalId)
         }
       })
       .catch(e => {
+        setLoadingStatus(false)
+        console.log("222222222222222222222")
+        toast.error('The vote was failed', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         dispatch({
           type: "SET_MESSAGE",
           payload: {
@@ -128,9 +151,9 @@ const Gov = () => {
         });
       })
   }
-  const getProposalVoteStatus = (address) => {
+  const getProposalVoteStatus = (address, proposalId) => {
     axios
-      .get(state.chain.lcd + "/cosmos/gov/v1beta1/proposals/131/votes/" + address)
+      .get(`${state.chain.lcd}/cosmos/gov/v1beta1/proposals/${proposalId}/votes/${address}`)
       .then((res) => {
         if (res.data) {
           let voteStatus = null;
@@ -145,9 +168,11 @@ const Gov = () => {
 
   useEffect(() => {
     if (state.chain.rpc) {
+      setLoadingStatus(true)
       axios
         .get(state.chain.lcd + "/gov/proposals?limit=1000")
         .then((res) => {
+          setLoadingStatus(false)
           const ongoingProposals = [];
           const passedProposals = [];
           const failedProposals = [];
@@ -174,7 +199,7 @@ const Gov = () => {
   }, [state.chain]);
   const openDetail = (data, status) => () => {
     if (status === "ongoing") {
-      getProposalVoteStatus(state.address)
+      getProposalVoteStatus(state.address, data.id)
     }
     setOpen(true)
     setCurrentProposal(data)
@@ -182,6 +207,17 @@ const Gov = () => {
   }
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       {state.message && (
         <Alert sx={{ mb: 3 }} severity={state.message.severity}>
           {state.message.text}
@@ -191,113 +227,124 @@ const Gov = () => {
         <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
           Ongoing Proposals
         </Typography>
-
-        {proposalsOngoing.length > 0 ?
-          <>
-            <React.Fragment>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableBody>
-                    {paginateObjects(proposalsOngoing, proposalsOngoingPagination).map((proposal, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell align="left">
-                          <Stack direction="row">
-                            <Chip size="small" label={formatDate(proposal.submit_time)} color="success" />
-                            <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="warning" />
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
-                        <TableCell align="left">
-                          <Button variant="outlined" onClick={openDetail(proposal, "ongoing")}>Details</Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </React.Fragment>
-            <Grid container justifyContent="flex-end">
-              <Pagination sx={{ py: 1 }} onChange={handleOngoingPagination} count={Math.ceil(proposalsOngoing.length / 3)} shape="rounded" />
-            </Grid>
-          </>
-          : <Alert severity="info">There are no ongoing proposals!</Alert>}
+        {loadingStatus ? (
+          <Loading />
+        ) : (
+          <React.Fragment>
+            {proposalsOngoing.length > 0 ?
+              <React.Fragment>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableBody>
+                      {paginateObjects(proposalsOngoing, proposalsOngoingPagination).map((proposal, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell align="left">
+                            <Stack direction="row">
+                              <Chip size="small" label={formatDate(proposal.submit_time)} color="success" />
+                              <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="warning" />
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
+                          <TableCell align="left">
+                            <Button variant="outlined" onClick={openDetail(proposal, "ongoing")}>Details</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Grid container justifyContent="flex-end">
+                  <Pagination sx={{ py: 1 }} onChange={handleOngoingPagination} count={Math.ceil(proposalsOngoing.length / 3)} shape="rounded" />
+                </Grid>
+              </React.Fragment>
+              : <Alert severity="info">There are no ongoing proposals!</Alert>}
+          </React.Fragment>
+        )}
       </Paper>
       <Paper sx={{ mt: 3 }} elevation={0} variant="outlined">
         <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
           Passed Proposals
         </Typography>
-        {proposalsPassed.length > 0 ?
-          <>
-            <React.Fragment>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableBody>
-                    {paginateObjects(proposalsPassed, proposalsPassedPagination).map((proposal, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell align="left">
-                          <Stack direction="row">
-                            <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
-                            <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="success" />
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
-                        <TableCell align="left">
-                          <Button variant="outlined" onClick={openDetail(proposal, "passed")}>Details</Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </React.Fragment>
-            <Grid container justifyContent="flex-end">
-              <Pagination sx={{ py: 1 }} onChange={handlePassedPagination} count={Math.ceil(proposalsPassed.length / 3)} shape="rounded" />
-            </Grid>
-          </>
-          : <Alert severity="info">There are no passed proposals!</Alert>}
+        {loadingStatus ? (
+          <Loading />
+        ) : (
+          <React.Fragment>
+            {proposalsPassed.length > 0 ?
+              <React.Fragment>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableBody>
+                      {paginateObjects(proposalsPassed, proposalsPassedPagination).map((proposal, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell align="left">
+                            <Stack direction="row">
+                              <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
+                              <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="success" />
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
+                          <TableCell align="left">
+                            <Button variant="outlined" onClick={openDetail(proposal, "passed")}>Details</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Grid container justifyContent="flex-end">
+                  <Pagination sx={{ py: 1 }} onChange={handlePassedPagination} count={Math.ceil(proposalsPassed.length / 3)} shape="rounded" />
+                </Grid>
+              </React.Fragment>
+              : <Alert severity="info">There are no passed proposals!</Alert>}
+          </React.Fragment>
+        )}
       </Paper>
-
       <Paper sx={{ mt: 3 }} elevation={0} variant="outlined">
         <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
           Failed Proposals
         </Typography>
-
-        {proposalsFailed.length > 0 ?
-          <>
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableBody>
-                  {paginateObjects(proposalsFailed, proposalsFailedPagination).map((proposal, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                      <TableCell align="left">
-                        <Stack direction="row">
-                          <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
-                          <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="error" />
-                        </Stack>
-                      </TableCell>
-                      <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
-                      <TableCell align="left">
-                        <Button variant="outlined" onClick={openDetail(proposal, "failed")}>Details</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Grid container justifyContent="flex-end">
-              <Pagination sx={{ py: 1 }} onChange={handleFailedPagination} count={Math.ceil(proposalsFailed.length / 3)} shape="rounded" />
-            </Grid>
-          </>
-          : <Alert severity="info">There are no failed proposals!</Alert>}
+        {loadingStatus ? (
+          <Loading />
+        ) : (
+          <React.Fragment>
+            {proposalsFailed.length > 0 ?
+              <React.Fragment>
+                <TableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableBody>
+                      {paginateObjects(proposalsFailed, proposalsFailedPagination).map((proposal, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell align="left">
+                            <Stack direction="row">
+                              <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
+                              <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="error" />
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
+                          <TableCell align="left">
+                            <Button variant="outlined" onClick={openDetail(proposal, "failed")}>Details</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Grid container justifyContent="flex-end">
+                  <Pagination sx={{ py: 1 }} onChange={handleFailedPagination} count={Math.ceil(proposalsFailed.length / 3)} shape="rounded" />
+                </Grid>
+              </React.Fragment>
+              : <Alert severity="info">There are no failed proposals!</Alert>}
+          </React.Fragment>
+        )}
       </Paper>
       <Dialog
         fullScreen
@@ -305,6 +352,13 @@ const Gov = () => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
+        {loadingStatus && (
+          <div className="loading">
+            <div className="loading-center">
+              <Loading />
+            </div>
+          </div>
+        )}
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
