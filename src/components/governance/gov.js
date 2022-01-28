@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../context/store";
 import axios from "axios";
@@ -10,19 +11,20 @@ import {
   Paper,
   Pagination,
   Button,
-  ButtonGroup,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
   Dialog,
   DialogContent,
   Box,
   Slide,
   AppBar,
   Toolbar,
-  IconButton
+  IconButton,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  CircularProgress,
+  RadioGroup,
+  Radio,
+  FormControlLabel
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { ExpandMore, ThumbUp, ThumbDown, ThumbsUpDown, ThumbDownOutlined } from "@mui/icons-material";
@@ -37,19 +39,21 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 const Gov = () => {
   const [state, dispatch] = useContext(GlobalContext);
-  const [proposalsOngoing, setProposalsOngoing] = useState([]);
-  const [proposalsPassed, setProposalsPassed] = useState([]);
-  const [proposalsFailed, setProposalsFailed] = useState([]);
-  const [proposalsOngoingPagination, setProposalsOngoingPagination] = useState(1);
-  const [proposalsPassedPagination, setProposalsPassedPagination] = useState(1);
-  const [proposalsFailedPagination, setProposalsFailedPagination] = useState(1);
   const [currentProposal, setCurrentProposal] = useState(null);
-  const [voteStatus, setVoteStatus] = useState("ongoing");
+  const [voteStatus, setVoteStatus] = useState(2);
+  const [selectVote, setSelectVote] = useState(null)
   const [ongoingVoteStatus, setOngoingVoteStatus] = useState(null);
   const [loadingStatus, setLoadingStatus] = useState(false)
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setSelectVote(null)
+  }
+  const [totalProposal, setTotalProposal] = useState([]);
+  const [totalProposalPagination, setTotalProposalPagination] = useState(1);
+  const [expanded, setExpanded] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false)
   const formatDate = (data) => {
     const date = new Date(data);
     return date.toLocaleDateString("en-US");
@@ -57,50 +61,39 @@ const Gov = () => {
   const formatStatus = (status) => {
     switch (status) {
       case 1:
-        return 'Deposit Period'
+        return ['Deposit Period', 'warning']
       case 2:
-        return 'Voting Period'
+        return ['Voting Period', 'warning']
       case 3:
-        return 'Passed'
+        return ['Passed', "success"]
       case 4:
-        return 'Rejected'
+        return ['Rejected', 'error']
       case 5:
-        return 'Failed'
+        return ['Failed', 'error']
       default:
-        return 'Unspecified'
+        return ['Unspecified', 'error']
     }
   }
   const voteFormatStatus = (status) => {
     switch (status) {
       case "VOTE_OPTION_YES":
-        return ['YES', "success"]
+        return ['YES', "success", 1]
       case "VOTE_OPTION_ABSTAIN":
-        return ['ABSTAIN', 'warning']
+        return ['ABSTAIN', 'warning', 2]
       case "VOTE_OPTION_NO":
-        return ['NO', 'error']
+        return ['NO', 'error', 3]
       case "VOTE_OPTION_NO_WITH_VETO":
-        return ['NO WITH VETO', 'error']
+        return ['NO WITH VETO', 'error', 4]
       default:
         return ['UNDEFINED', 'error']
     }
   }
-
   const paginateObjects = (objects, page) => {
-    return objects.slice((page - 1) * 3, page * 3);
+    return objects.slice((page - 1) * 10, page * 10);
   }
-
-  const handleOngoingPagination = (event, value) => {
-    setProposalsOngoingPagination(value);
+  const handleTotalProposalPagination = (event, value) => {
+    setTotalProposalPagination(value)
   };
-
-  const handlePassedPagination = (event, value) => {
-    setProposalsPassedPagination(value);
-  };
-
-  const handleFailedPagination = (event, value) => {
-    setProposalsFailedPagination(value);
-  };
-
   const NewLineToBr = ({ children = "" }) => {
     return children.replace(/\\n/g, '\n').split('\n').reduce(function (arr, line) {
       return arr.concat(
@@ -109,16 +102,30 @@ const Gov = () => {
       );
     }, []);
   }
-
   const handleVote = (option, proposalId) => {
-    setLoadingStatus(true)
-    vote(state.chain, state.signingClient, state.address, proposalId, option)
-      .then(res => {
-        console.log(res, "***********************")
-        if (res) {
-          console.log("1111111111111111111111111")
-          setLoadingStatus(false)
-          toast.success('The transaction was succeeded', {
+    if (selectVote) {
+      setConfirmLoading(true)
+      vote(state.chain, state.signingClient, state.address, proposalId, Number(option))
+        .then(res => {
+          if (res) {
+            setSelectVote(null)
+            setConfirmLoading(false)
+            setOpen(false);
+            toast.success('The transaction was succeeded', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            getProposalVoteStatus(state.address, proposalId)
+          }
+        })
+        .catch(e => {
+          setConfirmLoading(false)
+          toast.error('The vote was failed', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -127,29 +134,26 @@ const Gov = () => {
             draggable: true,
             progress: undefined,
           });
-          getProposalVoteStatus(state.address, proposalId)
-        }
-      })
-      .catch(e => {
-        setLoadingStatus(false)
-        console.log("222222222222222222222")
-        toast.error('The vote was failed', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        dispatch({
-          type: "SET_MESSAGE",
-          payload: {
-            message: `${e}`,
-            severity: "error",
-          },
-        });
-      })
+          // setOpen(false);
+          dispatch({
+            type: "SET_MESSAGE",
+            payload: {
+              message: `${e}`,
+              severity: "error",
+            },
+          });
+        })
+    } else {
+      toast.error('Please select the vote.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
   const getProposalVoteStatus = (address, proposalId) => {
     axios
@@ -160,12 +164,12 @@ const Gov = () => {
           if (res.data.vote.option) {
             voteStatus = res.data.vote.option;
             setOngoingVoteStatus(voteStatus)
+            setSelectVote(voteFormatStatus(voteStatus)[2])
           }
         }
       })
       .catch(e => console.log)
   }
-
   useEffect(() => {
     if (state.chain.rpc) {
       setLoadingStatus(true)
@@ -176,35 +180,30 @@ const Gov = () => {
           const ongoingProposals = [];
           const passedProposals = [];
           const failedProposals = [];
-          res.data.result.reverse().map(entry => {
-            switch (entry.status) {
-              case 1:
-              case 2:
-                ongoingProposals.push(entry);
-                break;
-              case 3:
-                passedProposals.push(entry);
-                break;
-              default:
-                failedProposals.push(entry);
-            }
-            return true;
-          })
-          setProposalsFailed(failedProposals);
-          setProposalsOngoing(ongoingProposals);
-          setProposalsPassed(passedProposals);
+          if (res.data.result) {
+            setTotalProposal(res.data.result.reverse());
+          }
         })
         .catch(e => console.log)
     }
   }, [state.chain]);
-  const openDetail = (data, status) => () => {
-    if (status === "ongoing") {
-      getProposalVoteStatus(state.address, data.id)
+  const openDetail = (data) => (event, isExpanded) => {
+    setExpanded(isExpanded ? data.id : false);
+    if (isExpanded) {
+      if (data.status === 2) {
+        getProposalVoteStatus(state.address, data.id)
+      }
+      setVoteStatus(data.status)
+      setCurrentProposal(data)
     }
+  }
+  const openModalAction = (data) => {
     setOpen(true)
     setCurrentProposal(data)
-    setVoteStatus(status)
   }
+  const handleRadioChange = (event) => {
+    setSelectVote(event.target.value);
+  };
   return (
     <>
       <ToastContainer
@@ -218,258 +217,155 @@ const Gov = () => {
         draggable
         pauseOnHover
       />
-      {state.message && (
+      {/* {state.message && (
         <Alert sx={{ mb: 3 }} severity={state.message.severity}>
           {state.message.text}
         </Alert>
-      )}
+      )} */}
       <Paper sx={{ mt: 3 }} elevation={0} variant="outlined">
         <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
-          Ongoing Proposals
+          Total Proposals
         </Typography>
         {loadingStatus ? (
-          <Loading />
+          <Loading width={200} height={200} />
         ) : (
           <React.Fragment>
-            {proposalsOngoing.length > 0 ?
-              <React.Fragment>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableBody>
-                      {paginateObjects(proposalsOngoing, proposalsOngoingPagination).map((proposal, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell align="left">
-                            <Stack direction="row">
-                              <Chip size="small" label={formatDate(proposal.submit_time)} color="success" />
-                              <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="warning" />
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
-                          <TableCell align="left">
-                            <Button variant="outlined" onClick={openDetail(proposal, "ongoing")}>Details</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+            {totalProposal.length > 0 ?
+              <>
+                {paginateObjects(totalProposal, totalProposalPagination).map((proposal, index) => (
+                  <React.Fragment key={index}>
+                    <Accordion key={proposal.id} elevation={0} expanded={expanded === proposal.id} disableGutters square onChange={openDetail(proposal)}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                        sx={{ borderBottom: '1px solid rgba(0,0,0,.2)' }}
+                      >
+                        <Stack direction="row">
+                          <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
+                          <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)[0]} color={formatStatus(proposal.status)[1]} />
+                        </Stack>
+                        <Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ border: 0 }}>
+                        <Grid container>
+                          <Grid item md={8} xs={12} paddingTop={3}>
+                            <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
+                              <strong>Deposited amount:</strong> {currentProposal?.total_deposit.length > 0 ? currentProposal?.total_deposit[0].amount / 1000000 : 0}
+                              <br /><br /><br />
+                              <NewLineToBr>{currentProposal?.content?.value?.description}</NewLineToBr>
+                            </Typography>
+                          </Grid>
+                          <Grid item md={1} xs={12} />
+                          {voteStatus === 2 ? (
+                            <Grid item md={3} xs={12} paddingTop={3}>
+                              {state.address && (
+                                <>
+                                  <Typography paddingBottom={1}>
+                                    <strong>Your Vote: </strong>
+                                  </Typography>
+                                  <div paddingBottom={2}>
+                                    <Chip sx={{ ml: 1 }} label={voteFormatStatus(ongoingVoteStatus)[0]} color={voteFormatStatus(ongoingVoteStatus)[1]} />
+                                  </div>
+                                </>
+                              )}
+                              <Typography paddingBottom={2} paddingTop={1}>
+                                <strong>Vote: </strong>
+                              </Typography>
+                              {state.address ?
+                                <Button
+                                  variant="contained"
+                                  color="success"
+                                  disableElevation
+                                  //  startIcon={<ThumbUp />}
+                                  onClick={() => openModalAction(proposal)}
+                                >
+                                  Vote
+                                </Button>
+                                : <Alert severity="warning">Please connect your wallet to vote!</Alert>
+                              }
+                            </Grid>
+                          ) : (
+                            <Grid item md={3} xs={12} paddingTop={3}>
+                              <Typography>
+                                <strong>Votes: </strong>
+                              </Typography>
+                              <Chart
+                                style={{ height: '200px' }}
+                                data={[
+                                  { title: 'Yes', value: parseInt(currentProposal?.final_tally_result?.yes), color: 'green' },
+                                  { title: 'No', value: parseInt(currentProposal?.final_tally_result?.no), color: 'red' },
+                                  { title: 'Abstain', value: parseInt(currentProposal?.final_tally_result?.abstain), color: 'purple' },
+                                  { title: 'No with Veto', value: parseInt(currentProposal?.final_tally_result?.no_with_veto), color: 'darkred' },
+                                ]}
+                              />
+                            </Grid>
+                          )}
+                        </Grid>
+                      </AccordionDetails>
+                    </Accordion>
+                  </React.Fragment>
+                ))}
                 <Grid container justifyContent="flex-end">
-                  <Pagination sx={{ py: 1 }} onChange={handleOngoingPagination} count={Math.ceil(proposalsOngoing.length / 3)} shape="rounded" />
+                  <Pagination sx={{ py: 1 }} onChange={handleTotalProposalPagination} count={Math.ceil(totalProposal.length / 10)} shape="rounded" />
                 </Grid>
-              </React.Fragment>
-              : <Alert severity="info">There are no ongoing proposals!</Alert>}
-          </React.Fragment>
-        )}
-      </Paper>
-      <Paper sx={{ mt: 3 }} elevation={0} variant="outlined">
-        <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
-          Passed Proposals
-        </Typography>
-        {loadingStatus ? (
-          <Loading />
-        ) : (
-          <React.Fragment>
-            {proposalsPassed.length > 0 ?
-              <React.Fragment>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableBody>
-                      {paginateObjects(proposalsPassed, proposalsPassedPagination).map((proposal, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell align="left">
-                            <Stack direction="row">
-                              <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
-                              <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="success" />
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
-                          <TableCell align="left">
-                            <Button variant="outlined" onClick={openDetail(proposal, "passed")}>Details</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <Grid container justifyContent="flex-end">
-                  <Pagination sx={{ py: 1 }} onChange={handlePassedPagination} count={Math.ceil(proposalsPassed.length / 3)} shape="rounded" />
-                </Grid>
-              </React.Fragment>
-              : <Alert severity="info">There are no passed proposals!</Alert>}
-          </React.Fragment>
-        )}
-      </Paper>
-      <Paper sx={{ mt: 3 }} elevation={0} variant="outlined">
-        <Typography sx={{ pl: 3, py: 2, borderBottom: 'solid rgba(0,0,0,.2) 1px' }} variant="h5">
-          Failed Proposals
-        </Typography>
-        {loadingStatus ? (
-          <Loading />
-        ) : (
-          <React.Fragment>
-            {proposalsFailed.length > 0 ?
-              <React.Fragment>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableBody>
-                      {paginateObjects(proposalsFailed, proposalsFailedPagination).map((proposal, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell align="left">
-                            <Stack direction="row">
-                              <Chip size="small" label={formatDate(proposal.submit_time)} color="error" />
-                              <Chip size="small" sx={{ ml: 1 }} label={formatStatus(proposal.status)} color="error" />
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="justify"><Typography sx={{ ml: 2 }}>{proposal?.content?.value?.title}</Typography></TableCell>
-                          <TableCell align="left">
-                            <Button variant="outlined" onClick={openDetail(proposal, "failed")}>Details</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                <Grid container justifyContent="flex-end">
-                  <Pagination sx={{ py: 1 }} onChange={handleFailedPagination} count={Math.ceil(proposalsFailed.length / 3)} shape="rounded" />
-                </Grid>
-              </React.Fragment>
-              : <Alert severity="info">There are no failed proposals!</Alert>}
+              </>
+              : <Alert severity="info">There are no proposals!</Alert>}
           </React.Fragment>
         )}
       </Paper>
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        {loadingStatus && (
-          <div className="loading">
-            <div className="loading-center">
-              <Loading />
-            </div>
-          </div>
-        )}
         <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              {currentProposal?.content?.value?.title}
+            <Typography variant="h6" component="div" pr={4}>
+              Choose your vote
             </Typography>
             <IconButton
               edge="start"
               color="inherit"
               onClick={handleClose}
               aria-label="close"
+              mx={3}
             >
               <CloseIcon />
             </IconButton>
           </Toolbar>
         </AppBar>
         <DialogContent>
-          {currentProposal && (
-            <Box>
-              <Grid container>
-                <Grid item md={8} xs={12} paddingTop={3}>
-                  <Typography variant="body2" sx={{ display: 'inline-block', color: 'text.secondary' }}>
-                    <strong>Deposited amount:</strong> {currentProposal?.total_deposit.length > 0 ? currentProposal?.total_deposit[0].amount / 1000000 : 0}
-                    <br /><br /><br />
-                    <NewLineToBr>{currentProposal?.content?.value?.description}</NewLineToBr>
-                  </Typography>
-                </Grid>
-                <Grid item md={1} xs={12} />
-                {voteStatus === "ongoing" ? (
-                  <Grid item md={3} xs={12} paddingTop={3}>
-                    {state.address && (
-                      <>
-                        <Typography paddingBottom={1}>
-                          <strong>Current Vote Status: </strong>
-                        </Typography>
-                        <div paddingBottom={2}>
-                          <Chip sx={{ ml: 1 }} label={voteFormatStatus(ongoingVoteStatus)[0]} color={voteFormatStatus(ongoingVoteStatus)[1]} />
-                        </div>
-                      </>
-                    )}
-                    <Typography paddingBottom={3} paddingTop={1}>
-                      <strong>Vote: </strong>
-                    </Typography>
-                    {state.address ?
-                      <ButtonGroup
-                        orientation="vertical"
-                        aria-label="vertical contained button group"
-                        variant="contained"
-                      >
-                        <Button
-                          variant="contained"
-                          color="success"
-                          disableElevation
-                          startIcon={<ThumbUp />}
-                          onClick={() => handleVote(1, currentProposal.id)}
-                        >
-                          Yes
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="warning"
-                          disableElevation
-                          startIcon={<ThumbsUpDown />}
-                          onClick={() => handleVote(2, currentProposal.id)}
-                        >
-                          Abstain
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          disableElevation
-                          startIcon={<ThumbDownOutlined />}
-                          onClick={() => handleVote(3, currentProposal.id)}
-                        >
-                          No
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          disableElevation
-                          startIcon={<ThumbDown />}
-                          onClick={() => handleVote(4, currentProposal.id)}
-                        >
-                          No with veto
-                        </Button>
-                      </ButtonGroup>
-                      : <Alert severity="warning">Please connect your wallet to vote!</Alert>
-                    }
-                  </Grid>
-                ) : (
-                  <Grid item md={3} xs={12} paddingTop={3}>
-                    <Typography>
-                      <strong>Votes: </strong>
-                    </Typography>
-                    <Chart
-                      style={{ height: '200px' }}
-                      data={[
-                        { title: 'Yes', value: parseInt(currentProposal?.final_tally_result?.yes), color: 'green' },
-                        { title: 'No', value: parseInt(currentProposal?.final_tally_result?.no), color: 'red' },
-                        { title: 'Abstain', value: parseInt(currentProposal?.final_tally_result?.abstain), color: 'purple' },
-                        { title: 'No with Veto', value: parseInt(currentProposal?.final_tally_result?.no_with_veto), color: 'darkred' },
-                      ]}
-                    />
-                  </Grid>
-                )}
-              </Grid>
+          <Grid item md={12} xs={12} paddingTop={3}>
+            <Box py={2}>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="female"
+                name="radio-buttons-group"
+                value={selectVote}
+                onChange={handleRadioChange}
+
+              >
+                <FormControlLabel value={1} control={<Radio />} label="Yes" />
+                <FormControlLabel value={2} control={<Radio />} label="Abstain" />
+                <FormControlLabel value={3} control={<Radio />} label="No" />
+                <FormControlLabel value={4} control={<Radio />} label="No with veto" />
+              </RadioGroup>
             </Box>
-          )}
+            <Box py={2}>
+              <Button
+                variant={"outlined"}
+                disableElevation
+                sx={{ width: '100%' }}
+                onClick={() => handleVote(selectVote, currentProposal.id)}
+              >
+                {confirmLoading ? <CircularProgress size={30} /> : "Confirm"}
+              </Button>
+            </Box>
+          </Grid>
         </DialogContent>
       </Dialog>
     </>
   );
 };
-
 export default Gov;
