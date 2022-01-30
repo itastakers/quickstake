@@ -11,6 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import Grid from "@mui/material/Grid";
 
 import UsbIcon from "@mui/icons-material/Usb";
 import BluetoothIcon from "@mui/icons-material/Bluetooth";
@@ -53,10 +54,14 @@ const ConnectWallet = () => {
 
   if (state.address !== "" && state.signer !== null) {
     return (
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <Chip label={state.address} variant="outlined" />
-        <Chip label={renderBalance(state.chain, state.balance)} />
-      </Stack>
+      <Grid container spacing={1} wrap="wrap">
+        <Grid item sm={12} md={9}>
+          <Chip label={state.address} variant="outlined" />
+        </Grid>
+        <Grid item sm={12} md={3}>
+          <Chip label={renderBalance(state.chain, state.balance)} />
+        </Grid>
+      </Grid>
     );
   }
 

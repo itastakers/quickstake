@@ -6,7 +6,7 @@ import ConnectWallet from "./connect-wallet";
 const Header = () => {
   return (
     <Grid container spacing={2} alignItems="center">
-      <Grid item xs={6}>
+      <Grid item xs={12} md={6}>
         <Typography variant="h4" component="h1">
           Quick Stake
         </Typography>
@@ -15,7 +15,7 @@ const Header = () => {
           by ITA Stakers 🇮🇹
         </Typography>
       </Grid>
-      <Grid item xs={6} textAlign="right">
+      <Grid item xs={12} md={6} textAlign="right">
         <ConnectWallet />
       </Grid>
     </Grid>

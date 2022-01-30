@@ -67,7 +67,7 @@ const NetworkSelect = ({chainId,type}) => {
         }}
       />
       <Grid container spacing={2}>
-        <Grid item lg={3}>
+        <Grid item md={3} xs={7}>
           <Stack direction="row" spacing={2}>
             <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">
@@ -104,7 +104,7 @@ const NetworkSelect = ({chainId,type}) => {
             </FormControl>
           </Stack>
         </Grid>
-        <Grid item lg={5}>
+        <Grid item md={5} xs={5}>
           <Button
             disableElevation
             onClick={() =>

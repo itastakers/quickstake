@@ -23,10 +23,10 @@ const IndexPage = (props) => {
   return (
     <Layout>
       <Grid sx={{ py: 4 }} container>
-        <Grid alignSelf="center" item md={6} xs={12}>
+        <Grid alignSelf="center" item md={6} xs={12} sx={{ py: 2 }}>
           <NetworkSelect chainId={chainId} type={type} />
         </Grid>
-        <Grid alignSelf="center" item md={6} xs={12}>
+        <Grid alignSelf="center" item md={6} xs={12} sx={{ py: 2 }}>
           <MoreMenu chainId={chainId} type={type} />
         </Grid>
       </Grid>
