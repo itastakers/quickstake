@@ -177,9 +177,6 @@ const Gov = () => {
         .get(state.chain.lcd + "/gov/proposals?limit=1000")
         .then((res) => {
           setLoadingStatus(false)
-          const ongoingProposals = [];
-          const passedProposals = [];
-          const failedProposals = [];
           if (res.data.result) {
             setTotalProposal(res.data.result.reverse());
           }
@@ -189,6 +186,7 @@ const Gov = () => {
   }, [state.chain]);
   const openDetail = (data) => (event, isExpanded) => {
     setExpanded(isExpanded ? data.id : false);
+    setOngoingVoteStatus(null)
     if (isExpanded) {
       if (data.status === 2) {
         getProposalVoteStatus(state.address, data.id)
@@ -265,7 +263,9 @@ const Gov = () => {
                                     <strong>Your Vote: </strong>
                                   </Typography>
                                   <div paddingBottom={2}>
-                                    <Chip sx={{ ml: 1 }} label={voteFormatStatus(ongoingVoteStatus)[0]} color={voteFormatStatus(ongoingVoteStatus)[1]} />
+                                    {ongoingVoteStatus&&(
+                                      <Chip sx={{ ml: 1 }} label={voteFormatStatus(ongoingVoteStatus)[0]} color={voteFormatStatus(ongoingVoteStatus)[1]} />
+                                    )}
                                   </div>
                                 </>
                               )}
