@@ -7,54 +7,74 @@ import ValidatorList from "../validator-list";
 import Gov from "../governance/gov";
 import TokenManager from "../token-manager/token-manager";
 import {navigate} from "gatsby";
+import chains from "../../data/chains.json";
 const TabPanel = (props) => {
- const { children, value, index ,type, ...other } = props;
-
- return (
-  <div
-   role="tabpanel"
-   hidden={value !== index}
-   id={`simple-tabpanel-${index}`}
-   aria-labelledby={`simple-tab-${index}`}
-   {...other}
-  >
+  const { children, value, index ,type, ...other } = props;
+  
+  return (
+    <div
+    role="tabpanel"
+    hidden={value !== index}
+    id={`simple-tabpanel-${index}`}
+    aria-labelledby={`simple-tab-${index}`}
+    {...other}
+    >
    {value === index && <Box sx={{ p: 0 }}>{children}</Box>}
   </div>
  );
 };
 
 TabPanel.propTypes = {
- children: PropTypes.node,
- index: PropTypes.number.isRequired,
- value: PropTypes.number.isRequired,
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
 const a11yProps = (index) => {
- return {
-  id: `simple-tab-${index}`,
-  "aria-controls": `simple-tabpanel-${index}`,
- };
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
 };
 
-const TabsPanel = ({type}) => {
- const [state] = useContext(GlobalContext);
- const [value, setValue] = useState(0);
+const TabsPanel = ({type,chainId}) => {
+  const [state, dispatch] = useContext(GlobalContext);
+  const [value, setValue] = useState(0);
+ let mergedChains = chains;
  useEffect(()=>{
-    switch (type) {
-        case "staking":
-            setValue(0)
-            break;
-        case "governance":
-            setValue(1)
+  const chain = mergedChains.find((c) => c.chain_id === chainId);
+  let network = "";
+  let cw20_support = false;  
+  if(chain){
+    network = chain.chain_id;
+    cw20_support = chain.cw20_support;
+    dispatch({ type: "SET_SELECTED_NETWORK", payload: chainId, chain: chain });
+  }else{
+    network = state.selectedNetwork;
+    cw20_support = state.chain.cw20_support;    
+  }
+  switch (type) {
+      case "staking":
+          setValue(0)
+          navigate(`/${network}/staking`)
           break;
-        case "cw20":
-            setValue(2)    
-          break;
-        default:
-            setValue(0)
-            navigate(`/${state.selectedNetwork}/staking`)
-      }
-    navigate(`/${state.selectedNetwork}/${type}`)
+      case "governance":
+          setValue(1)
+          navigate(`/${network}/governance`)
+        break;
+      case "cw20":
+        if(cw20_support){
+          setValue(2)
+          navigate(`/${network}/cw20`)
+        }else{
+          setValue(0)
+          navigate(`/${network}/staking`)
+        }
+        break;
+      default:
+          setValue(0)
+          navigate(`/${network}/staking`)
+    }
  },[type])
 
  const handleChange = (event, newValue) => {
@@ -71,11 +91,7 @@ const TabsPanel = ({type}) => {
       break;
   }
  };
- useEffect(() => {
-  if (!state.chain.cw20_support) {
-   setValue(0);
-  }
- }, [state.chain.cw20_support]);
+
 
  return (
   <>

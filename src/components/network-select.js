@@ -51,7 +51,15 @@ const NetworkSelect = ({chainId,type}) => {
 
   const handleChange = (event) => {
     const chain = mergedChains.find((c) => c.chain_id === event.target.value);
-    navigate(`/${event.target.value}/${type}`)
+    if(type==="cw20")    {
+      if(chain.cw20_support){
+        navigate(`/${event.target.value}/${type}`)  
+      }else{
+        navigate(`/${event.target.value}/staking`)  
+      }
+    }else{
+      navigate(`/${event.target.value}/${type}`)
+    }
     // reconnect keplr    
     connectKeplr(chain, dispatch);
 
