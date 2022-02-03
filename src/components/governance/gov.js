@@ -30,7 +30,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ExpandMore, ThumbUp, ThumbDown, ThumbsUpDown, ThumbDownOutlined } from "@mui/icons-material";
 import Chart from "./chart";
 import { vote } from "../../utils/cosmos";
-import "../../style/index.scss";
 import Loading from "../loading/loading"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

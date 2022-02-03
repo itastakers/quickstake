@@ -4,6 +4,7 @@ import { Grid } from "@mui/material";
 import NetworkSelect from "../../components/network-select";
 import TabsPanel from "../../components/index/tabs-panel";
 import MoreMenu from "../../components/more-menu";
+import "../../style/index.scss";
 const IndexPage = (props) => {
   const [chainId, setChainId] = useState("");
   const [type, setType] = useState("staking")

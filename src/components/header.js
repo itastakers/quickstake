@@ -1,7 +1,8 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import ConnectWallet from "./connect-wallet";
+// import ConnectWallet from "./connect-wallet";
+import ConnectWallet from "./connect-walletconnection";
 
 const Header = () => {
   return (
