@@ -17,8 +17,8 @@ const style = {
 };
 
 const RedelegateModal = ({ open, handleClose }) => {
-
     const [state, dispatch] = useContext(GlobalContext);
+    console.log(state.signingClient,"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
     const [loading, setLoading] = useState(false);
     const [currentDelegations, setCurrentDelegations] = useState([]);
     const [validators, setValidators] = useState([]);
@@ -27,8 +27,8 @@ const RedelegateModal = ({ open, handleClose }) => {
     const [value, setValue] = useState(0);
     const chain = chains.find(
         (chain) => chain.chain_id === state.selectedNetwork
-    );
-
+        );
+        
     const handleChange = (event) => {
         if (event.target.value && event.target.value !== "") {
             const validator = currentDelegations.find(el => el.address === event.target.value)

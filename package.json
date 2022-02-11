@@ -17,7 +17,8 @@
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.26.5",
     "@cosmjs/launchpad": "^0.27.1",
-    "@cosmjs/stargate": "^0.26.0",
+    "@cosmjs/proto-signing": "^0.27.1",
+    "@cosmjs/stargate": "^0.27.0-rc2",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@keplr-wallet/common": "^0.9.10",
