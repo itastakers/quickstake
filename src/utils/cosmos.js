@@ -422,20 +422,3 @@ async function makeWasmClient(endpoint) {
 }
 
 
-export const grantPermission = async (chain, client, granter, grantee, permissionType) => {
-  console.log(granter, grantee,permissionType)
-  const grantPermissionMessage = {
-    typeUrl: "/cosmos.authz.v1beta1.MsgGrant",
-    value: {
-      granter: granter,
-      grantee: grantee,
-      grant:{
-        authorization: permissionType,
-      }
-    },
-  };
-  return client?.signAndBroadcast(granter, [grantPermissionMessage], {
-    gas: "250000",
-    amount: [{ denom: chain.coinMinimalDenom, amount: "0" }],
-  });
-};

@@ -7,14 +7,13 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import UnbondingModal from "./modals/unbonding-modal";
 import RedelegateModal from "./modals/redelegate-modal";
 import RewardsModal from "./modals/rewards-modal";
-import GrantPermissionModal from "./modals/grantPermission-modal"
+
 const MoreMenu = () => {
     const [state] = useContext(GlobalContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const [modalUnbondingOpen, setModalUnbondingOpen] = useState(false);
     const [modalRedelegateOpen, setModalRedelegateOpen] = useState(false);
     const [modalRewardsOpen, setModalRewardsOpen] = useState(false);
-    const [modalGrantPermissionOpen, setModalGrantPermissionOpen] = useState(false)
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -60,7 +59,6 @@ const MoreMenu = () => {
                 >
                     <MenuItem onClick={() => { handleClose(); setModalUnbondingOpen(true) }}>Unbonding Assets</MenuItem>
                     <MenuItem onClick={() => { handleClose(); setModalRedelegateOpen(true) }}>Redelegate Assets</MenuItem>
-                    <MenuItem onClick={() => { handleClose(); setModalGrantPermissionOpen(true) }}>Grant Permission</MenuItem>
                 </Menu>
             </Box>
             <UnbondingModal
@@ -79,12 +77,6 @@ const MoreMenu = () => {
                 open={modalRewardsOpen}
                 handleClose={() => {
                     setModalRewardsOpen(false);
-                }}
-            />
-            <GrantPermissionModal
-                open={modalGrantPermissionOpen}
-                handleClose={() => {
-                    setModalGrantPermissionOpen(false);
                 }}
             />
         </>
